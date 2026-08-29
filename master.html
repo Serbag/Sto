@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Майстер СТО</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background-color: #0f172a; color: #f1f5f9; user-select: none; -webkit-tap-highlight-color: transparent; }
+    .btn-press:active { transform: scale(0.97); }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans pb-10">
+
+  <!-- Шапка -->
+  <header class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-40 flex justify-between items-center">
+    <h1 class="text-xl font-black tracking-wide text-white">СТО <span class="text-blue-500">PRO</span></h1>
+    <span class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-blue-500/10 text-blue-400 border border-blue-500/20">📱 Майстер</span>
+  </header>
+
+  <main class="flex-1 p-3 mx-auto w-full max-w-lg space-y-5" id="master-cards-list">
+    <div class="text-center py-10 text-slate-500">Підключення до бази даних...</div>
+  </main>
+
+  <!-- Універсальна Модалка для Вводу -->
+  <div id="modal-input" class="fixed inset-0 bg-slate-950/90 backdrop-blur-sm hidden z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity opacity-0">
+    <div class="bg-slate-800 border-t border-slate-700 sm:border rounded-t-3xl sm:rounded-2xl p-6 w-full max-w-sm transform translate-y-full sm:translate-y-0 transition-transform duration-300" id="modal-content">
+      <h3 id="modal-input-title" class="text-lg font-bold mb-4 text-white">Введіть дані</h3>
+      <input id="modal-input-field" type="text" class="w-full bg-slate-900 border border-slate-600 rounded-xl p-4 text-lg focus:border-blue-500 outline-none mb-4 text-white">
+      <div class="flex flex-col gap-3">
+        <button id="modal-input-btn" class="w-full bg-blue-600 active:bg-blue-700 text-white py-4 rounded-xl font-bold text-lg">Зберегти</button>
+        <button onclick="closeModal('modal-input')" class="w-full bg-slate-700 active:bg-slate-600 py-3 rounded-xl font-medium text-slate-300">Скасувати</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import { getDatabase, ref, update, onValue } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD3_i3S6lVNYqQMTdp9_CZGqCG6tteQVNg",
+      authDomain: "taller-gigante.firebaseapp.com",
+      databaseURL: "https://taller-gigante-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "taller-gigante",
+      storageBucket: "taller-gigante.firebasestorage.app",
+      messagingSenderId: "780999138565",
+      appId: "1:780999138565:web:9e68715ae7a4564c1fab6c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const ordersRef = ref(db, 'orders');
+
+    let allOrders = {};
+    let currentAction = null;
+
+    window.openModal = function(id) {
+      const m = document.getElementById(id);
+      const c = document.getElementById('modal-content');
+      m.classList.remove('hidden');
+      setTimeout(() => {
+        m.classList.remove('opacity-0');
+        c.classList.remove('translate-y-full');
+      }, 10);
+    }
+
+    window.closeModal = function(id) {
+      const m = document.getElementById(id);
+      const c = document.getElementById('modal-content');
+      m.classList.add('opacity-0');
+      c.classList.add('translate-y-full');
+      setTimeout(() => m.classList.add('hidden'), 300);
+    }
+
+    function promptInput(title, placeholder, callback) {
+      document.getElementById('modal-input-title').innerText = title;
+      const input = document.getElementById('modal-input-field');
+      input.value = ''; 
+      input.placeholder = placeholder;
+      currentAction = callback;
+      openModal('modal-input');
+      setTimeout(() => input.focus(), 300);
+    }
+
+    document.getElementById('modal-input-btn').addEventListener('click', () => {
+      const val = document.getElementById('modal-input-field').value.trim();
+      if (val && currentAction) { 
+        currentAction(val); 
+        closeModal('modal-input'); 
+      }
+    });
+
+    onValue(ordersRef, (snapshot) => {
+      const data = snapshot.val();
+      allOrders = data ? data : {};
+      renderMaster();
+    });
+
+    function renderMaster() {
+      const list = document.getElementById('master-cards-list');
+      list.innerHTML = '';
+      
+      const activeEntries = Object.entries(allOrders).filter(([id, o]) => o.status !== 'done');
+      
+      if (activeEntries.length === 0) {
+        list.innerHTML = `<div class="text-center py-10 text-slate-500"><div class="text-5xl mb-3">☕</div><p>Всі машини готові. Можна відпочити!</p></div>`;
+        return;
+      }
+
+      activeEntries.forEach(([id, o]) => {
+        const card = document.createElement('div');
+        card.className = "bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden shadow-xl mb-4";
+
+        const works = (o.works || []).map((w, idx) => `
+          <button id="toggle-work-${id}-${idx}" class="btn-press w-full text-left p-4 mb-2 rounded-2xl flex items-center gap-3 transition-colors ${w.done ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' : 'bg-slate-900 border border-slate-700 text-slate-200'}">
+            <div class="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center border ${w.done ? 'bg-emerald-500 border-emerald-500 text-slate-900' : 'border-slate-500'}">
+              ${w.done ? '✓' : ''}
+            </div>
+            <span class="font-medium text-[15px] leading-snug">${w.text}</span>
+          </button>
+        `).join('');
+
+        const parts = (o.parts || []).map(p => {
+          const cfg = p.status === 'issued' 
+            ? { bg: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20', txt: 'На складі / Видано' }
+            : p.status === 'ordered' 
+            ? { bg: 'bg-amber-500/10 text-amber-400 border-amber-500/20', txt: 'В дорозі (Замовлено)' }
+            : { bg: 'bg-slate-800 text-slate-400 border-slate-600', txt: 'Треба замовити' };
+            
+          return `
+            <div class="flex justify-between items-center p-3 mb-2 rounded-xl bg-slate-900 border border-slate-700/50">
+              <span class="text-sm font-medium ${p.status === 'issued' ? 'text-slate-500 line-through' : 'text-slate-200'}">⚙️ ${p.text}</span>
+              <span class="text-[10px] uppercase font-bold px-2 py-1 rounded-md border ${cfg.bg}">${cfg.txt}</span>
+            </div>
+          `;
+        }).join('');
+
+        card.innerHTML = `
+          <div class="p-5 border-b border-slate-700 bg-slate-800/80">
+            <div class="flex justify-between items-start mb-2">
+              <span class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest ${o.status === 'diag' ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-500/20 text-blue-400'}">
+                ${o.status === 'diag' ? 'Діагностика' : 'В роботі'}
+              </span>
+            </div>
+            <h2 class="text-2xl font-black text-white leading-tight">${o.car}</h2>
+            ${o.complaints ? `<div class="mt-3 text-sm text-slate-300 bg-slate-700/30 p-3 rounded-xl border border-slate-600/50">💬 ${o.complaints}</div>` : ''}
+          </div>
+
+          <div class="p-5 bg-slate-800">
+            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Список робіт</h4>
+            <div id="works-container-${id}">${works}</div>
+            <button id="add-work-${id}" class="w-full mt-1 py-4 border-2 border-dashed border-slate-600 text-slate-400 hover:text-slate-300 hover:border-slate-500 rounded-2xl font-bold text-sm transition-colors uppercase tracking-wide">
+              + Додати дефект / роботу
+            </button>
+
+            ${parts ? `<h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mt-6 mb-3">Запчастини</h4>${parts}` : ''}
+            
+            <button id="add-part-${id}" class="w-full mt-2 py-3 bg-blue-600/10 text-blue-400 border border-blue-500/30 rounded-xl font-bold text-sm uppercase tracking-wide active:bg-blue-600/20 transition-colors">
+              + Потрібна деталь
+            </button>
+          </div>
+        `;
+
+        // Обробка кліків по роботах (зміна галочки)
+        (o.works || []).forEach((_, idx) => {
+          card.querySelector(`#toggle-work-${id}-${idx}`).addEventListener('click', () => {
+            let updatedWorks = [...o.works];
+            updatedWorks[idx].done = !updatedWorks[idx].done;
+            update(ref(db, 'orders/' + id), { works: updatedWorks });
+          });
+        });
+
+        card.querySelector(`#add-work-${id}`).addEventListener('click', () => {
+          promptInput('Що знайшли / зробили?', 'Заміна колодок', v => {
+            let updatedWorks = [...(o.works || []), { text: v, done: false }];
+            update(ref(db, 'orders/' + id), { works: updatedWorks });
+          });
+        });
+
+        card.querySelector(`#add-part-${id}`).addEventListener('click', () => {
+          promptInput('Яка запчастина потрібна?', 'Масляний фільтр', v => {
+            let updatedParts = [...(o.parts || []), { text: v, status: 'none' }];
+            update(ref(db, 'orders/' + id), { parts: updatedParts });
+          });
+        });
+
+        list.appendChild(card);
+      });
+    }
+  </script>
+</body>
+</html>
+
