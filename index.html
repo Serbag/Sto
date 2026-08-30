@@ -2,8 +2,8 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>СТО Контроль — Приймальник</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>СТО Контроль — Керівник</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { background-color: #0f172a; color: #f1f5f9; user-select: none; }
@@ -14,95 +14,175 @@
 <body class="min-h-screen flex flex-col font-sans">
 
   <!-- Шапка -->
-  <header class="glass-panel border-b border-slate-700/50 p-4 sticky top-0 z-40 flex justify-between items-center shadow-lg">
-    <div class="flex items-center gap-3">
-      <div class="bg-blue-600 p-2 rounded-lg text-white">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+  <header class="glass-panel border-b border-slate-700/50 p-3 md:p-4 sticky top-0 z-40 flex flex-col md:flex-row justify-between items-center gap-3 shadow-lg">
+    <div class="flex justify-between items-center w-full md:w-auto">
+      <div class="flex items-center gap-3">
+        <div class="bg-blue-600 p-2 rounded-lg text-white">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9L18 10l-2-4H8L6 10l-2.5 1.1C2.7 11.3 2 12.1 2 13v3c0 .6.4 1 1 1h2m2 0a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0M5 11l1.5-4.5h11L19 11"></path>
+          </svg>
+        </div>
+        <h1 class="text-lg md:text-xl font-bold tracking-wide">СТО <span class="text-blue-500">ГІГАНТ</span></h1>
       </div>
-      <h1 class="text-xl font-bold tracking-wide">СТО <span class="text-blue-500">PRO</span></h1>
+      <div class="flex items-center gap-2 md:hidden">
+        <button onclick="openReportModal()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 px-3 py-1.5 rounded-lg font-medium text-xs flex items-center gap-1.5">
+          📊 Звіт
+        </button>
+        <span class="px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Керівник</span>
+      </div>
     </div>
-    <div class="flex items-center gap-4">
-      <input type="text" id="searchInput" placeholder="Пошук авто..." class="hidden md:block bg-slate-800 border border-slate-700 rounded-lg px-4 py-1.5 text-sm outline-none focus:border-blue-500 transition-colors">
-      <span class="px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">💻 Приймальник</span>
+    
+    <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+      <input type="text" id="searchInput" placeholder="Пошук авто або номеру..." class="w-full md:w-64 bg-slate-800 border border-slate-700 rounded-lg px-3 md:px-4 py-2 text-sm outline-none focus:border-blue-500 transition-colors">
+      <div class="hidden md:flex items-center gap-3">
+        <button onclick="openReportModal()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 transition-colors">
+          📊 Звіт
+        </button>
+        <span class="px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">💻 Керівник</span>
+      </div>
     </div>
   </header>
 
   <!-- Головна панель -->
-  <main class="flex-1 p-4 lg:p-6 w-full max-w-screen-2xl mx-auto flex flex-col gap-6">
-    <div class="flex justify-between items-center bg-slate-800/50 p-4 rounded-2xl border border-slate-700 shadow-sm">
+  <main class="flex-1 p-3 md:p-6 w-full max-w-screen-2xl mx-auto flex flex-col gap-4 md:gap-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-slate-800/50 p-4 rounded-2xl border border-slate-700 shadow-sm">
       <div>
-        <h2 class="text-lg font-semibold">Управління ремонтом</h2>
-        <p class="text-sm text-slate-400">Слідкуйте за статусами та замовляйте запчастини</p>
+        <h2 class="text-base md:text-lg font-semibold">Управління ремонтом</h2>
+        <p class="text-xs md:text-sm text-slate-400">Слідкуйте за статусами та замовляйте запчастини</p>
       </div>
-      <button onclick="openModal('modal-new-order')" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-xl font-medium shadow-lg shadow-blue-900/20 transition-all flex items-center gap-2">
+      <button onclick="openModal('modal-new-order')" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl font-medium shadow-lg shadow-blue-900/20 transition-all flex items-center justify-center gap-2 text-sm">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
         Нове авто
       </button>
     </div>
 
+    <!-- Мобільні таби перемикання колонок (видно лише на мобільних) -->
+    <div class="flex md:hidden bg-slate-800/80 p-1.5 rounded-2xl border border-slate-700 gap-1 shadow-sm">
+      <button onclick="switchTab('diag')" id="tab-diag" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 bg-amber-950/60 text-amber-400 border border-amber-800/50">
+        <span>🔍</span> Черга <span id="badge-diag" class="bg-amber-950 px-1.5 py-0.5 rounded text-[10px]">0</span>
+      </button>
+      <button onclick="switchTab('work')" id="tab-work" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 text-slate-400">
+        <span>⚙️</span> В роботі <span id="badge-work" class="bg-slate-800 px-1.5 py-0.5 rounded text-[10px]">0</span>
+      </button>
+      <button onclick="switchTab('done')" id="tab-done" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 text-slate-400">
+        <span>✅</span> Готово <span id="badge-done" class="bg-slate-800 px-1.5 py-0.5 rounded text-[10px]">0</span>
+      </button>
+    </div>
+
     <!-- Канбан Дошка -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 h-[70vh]">
-      <div class="flex flex-col rounded-2xl bg-slate-800/30 border border-slate-700/50 overflow-hidden">
-        <div class="p-4 border-b border-slate-700/50 bg-slate-800/50 flex justify-between items-center">
-          <h3 class="font-bold text-amber-400 flex items-center gap-2"><span class="text-xl">🔍</span> Діагностика</h3>
-          <span id="cnt-diag" class="bg-slate-700 text-xs font-bold px-2.5 py-1 rounded-md text-slate-300">0</span>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 pb-6">
+      
+      <!-- Колонка: Черга -->
+      <div id="panel-diag" class="column-panel flex flex-col rounded-2xl bg-amber-950/20 border border-amber-900/40 overflow-hidden h-[500px] md:h-[70vh]">
+        <div class="hidden md:flex p-3 md:p-4 border-b border-amber-900/40 bg-amber-950/40 justify-between items-center">
+          <h3 class="font-bold text-amber-400 flex items-center gap-2 text-sm md:text-base"><span class="text-lg md:text-xl">🔍</span> Черга</h3>
+          <span id="cnt-diag" class="bg-amber-950 text-amber-300 border border-amber-800/60 text-xs font-bold px-2 py-0.5 md:px-2.5 md:py-1 rounded-md">0</span>
         </div>
-        <div id="col-diag" class="p-3 space-y-3 overflow-y-auto flex-1 scroll-hide"></div>
+        <div id="col-diag" class="p-3 md:p-3.5 space-y-4 overflow-y-auto flex-1 scroll-hide"></div>
       </div>
 
-      <div class="flex flex-col rounded-2xl bg-slate-800/30 border border-slate-700/50 overflow-hidden">
-        <div class="p-4 border-b border-slate-700/50 bg-slate-800/50 flex justify-between items-center">
-          <h3 class="font-bold text-blue-400 flex items-center gap-2"><span class="text-xl">⚙️</span> В роботі</h3>
-          <span id="cnt-work" class="bg-slate-700 text-xs font-bold px-2.5 py-1 rounded-md text-slate-300">0</span>
+      <!-- Колонка: В роботі -->
+      <div id="panel-work" class="column-panel hidden md:flex flex-col rounded-2xl bg-blue-950/20 border border-blue-900/40 overflow-hidden h-[500px] md:h-[70vh]">
+        <div class="hidden md:flex p-3 md:p-4 border-b border-blue-900/40 bg-blue-950/40 justify-between items-center">
+          <h3 class="font-bold text-blue-400 flex items-center gap-2 text-sm md:text-base"><span class="text-lg md:text-xl">⚙️</span> В роботі</h3>
+          <span id="cnt-work" class="bg-blue-950 text-blue-300 border border-blue-800/60 text-xs font-bold px-2 py-0.5 md:px-2.5 md:py-1 rounded-md">0</span>
         </div>
-        <div id="col-work" class="p-3 space-y-3 overflow-y-auto flex-1 scroll-hide"></div>
+        <div id="col-work" class="p-3 md:p-3.5 space-y-4 overflow-y-auto flex-1 scroll-hide"></div>
       </div>
 
-      <div class="flex flex-col rounded-2xl bg-slate-800/30 border border-slate-700/50 overflow-hidden">
-        <div class="p-4 border-b border-slate-700/50 bg-slate-800/50 flex justify-between items-center">
-          <h3 class="font-bold text-emerald-400 flex items-center gap-2"><span class="text-xl">✅</span> Готово</h3>
-          <span id="cnt-done" class="bg-slate-700 text-xs font-bold px-2.5 py-1 rounded-md text-slate-300">0</span>
+      <!-- Колонка: Готово -->
+      <div id="panel-done" class="column-panel hidden md:flex flex-col rounded-2xl bg-emerald-950/20 border border-emerald-900/40 overflow-hidden h-[500px] md:h-[70vh]">
+        <div class="hidden md:flex p-3 md:p-4 border-b border-emerald-900/40 bg-emerald-950/40 justify-between items-center">
+          <h3 class="font-bold text-emerald-400 flex items-center gap-2 text-sm md:text-base"><span class="text-lg md:text-xl">✅</span> Готово</h3>
+          <span id="cnt-done" class="bg-emerald-950 text-emerald-300 border border-emerald-800/60 text-xs font-bold px-2 py-0.5 md:px-2.5 md:py-1 rounded-md">0</span>
         </div>
-        <div id="col-done" class="p-3 space-y-3 overflow-y-auto flex-1 scroll-hide"></div>
+        <div id="col-done" class="p-3 md:p-3.5 space-y-4 overflow-y-auto flex-1 scroll-hide"></div>
       </div>
+
     </div>
   </main>
 
-  <!-- Модалка: Нове Авто -->
-  <div id="modal-new-order" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4 opacity-0 transition-opacity">
-    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 w-full max-w-md shadow-2xl transform scale-95 transition-transform">
-      <h3 class="text-xl font-bold mb-4">🚗 Прийом авто</h3>
-      <div class="space-y-4">
-        <div>
-          <label class="text-sm text-slate-400 block mb-1.5">Авто та номер</label>
-          <input id="in-car" type="text" placeholder="Напр. BMW X5 (AX 7777 AI)" class="w-full bg-slate-900 border border-slate-600 rounded-xl p-3 focus:border-blue-500 outline-none">
-        </div>
-        <div>
-          <label class="text-sm text-slate-400 block mb-1.5">Скарги / Причина звернення</label>
-          <textarea id="in-complaints" rows="3" class="w-full bg-slate-900 border border-slate-600 rounded-xl p-3 focus:border-blue-500 outline-none resize-none"></textarea>
-        </div>
+  <!-- Модалка: Звіт (Запчастини / Роботи) -->
+  <div id="modal-report" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-3 md:p-6 opacity-0 transition-opacity">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-3xl h-[85vh] flex flex-col shadow-2xl overflow-hidden transform scale-95 transition-transform">
+      
+      <!-- Шапка модалки -->
+      <div class="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-900/50">
+        <h3 class="text-lg font-bold flex items-center gap-2">📊 Загальний звіт СТО</h3>
+        <button onclick="closeModal('modal-report')" class="text-slate-400 hover:text-white p-1 rounded-lg">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
       </div>
-      <div class="flex gap-3 mt-6">
-        <button onclick="closeModal('modal-new-order')" class="flex-1 bg-slate-700 hover:bg-slate-600 py-3 rounded-xl font-medium">Скасувати</button>
-        <button onclick="saveNewOrder()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl font-medium shadow-lg">Створити</button>
+
+      <!-- Таби звіту -->
+      <div class="flex border-b border-slate-700 bg-slate-900/30 p-2 gap-2">
+        <button onclick="switchReportTab('parts')" id="report-tab-parts" class="flex-1 py-2.5 px-4 rounded-xl text-xs md:text-sm font-bold transition-all bg-blue-600 text-white shadow">
+          📦 Запчастини
+        </button>
+        <button onclick="switchReportTab('works')" id="report-tab-works" class="flex-1 py-2.5 px-4 rounded-xl text-xs md:text-sm font-bold transition-all text-slate-400 hover:text-white bg-slate-800/50">
+          🛠️ Роботи
+        </button>
+      </div>
+
+      <!-- Контент звіту -->
+      <div class="p-4 flex-1 overflow-y-auto scroll-hide space-y-3" id="report-content">
+        <!-- Динамічно заповнюється -->
+      </div>
+
+      <!-- Футер модалки -->
+      <div class="p-3 border-t border-slate-700 bg-slate-900/55 flex justify-end">
+        <button onclick="closeModal('modal-report')" class="bg-slate-700 hover:bg-slate-600 px-5 py-2 rounded-xl text-sm font-medium">Закрити</button>
       </div>
     </div>
   </div>
 
-  <!-- Універсальна Модалка для Вводу -->
+  <!-- Модалка: Нове Авто -->
+  <div id="modal-new-order" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4 opacity-0 transition-opacity">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 md:p-6 w-full max-w-md shadow-2xl transform scale-95 transition-transform">
+      <h3 class="text-lg md:text-xl font-bold mb-4">🚗 Прийом авто</h3>
+      <div class="space-y-4">
+        <div>
+          <label class="text-xs md:text-sm text-slate-400 block mb-1.5">Авто та номер</label>
+          <input id="in-car" type="text" placeholder="Напр. BMW X5 (AX 7777 AI)" class="w-full bg-slate-900 border border-slate-600 rounded-xl p-3 text-sm focus:border-blue-500 outline-none">
+        </div>
+        <div>
+          <label class="text-xs md:text-sm text-slate-400 block mb-1.5">Скарги / Причина звернення</label>
+          <textarea id="in-complaints" rows="3" class="w-full bg-slate-900 border border-slate-600 rounded-xl p-3 text-sm focus:border-blue-500 outline-none resize-none"></textarea>
+        </div>
+      </div>
+      <div class="flex gap-3 mt-6">
+        <button onclick="closeModal('modal-new-order')" class="flex-1 bg-slate-700 hover:bg-slate-600 py-3 rounded-xl font-medium text-sm">Скасувати</button>
+        <button onclick="saveNewOrder()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl font-medium shadow-lg text-sm">Створити</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Універсальна Модалка для Вводу (рядок) -->
   <div id="modal-input" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4 opacity-0 transition-opacity">
-    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 w-full max-w-sm shadow-2xl">
-      <h3 id="modal-input-title" class="text-lg font-bold mb-4">Введіть дані</h3>
-      <input id="modal-input-field" type="text" class="w-full bg-slate-900 border border-slate-600 rounded-xl p-3 focus:border-blue-500 outline-none mb-6">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 md:p-6 w-full max-w-sm shadow-2xl">
+      <h3 id="modal-input-title" class="text-base md:text-lg font-bold mb-4">Введіть дані</h3>
+      <input id="modal-input-field" type="text" class="w-full bg-slate-900 border border-slate-600 rounded-xl p-3 text-sm focus:border-blue-500 outline-none mb-6">
       <div class="flex gap-3">
-        <button onclick="closeModal('modal-input')" class="flex-1 bg-slate-700 py-2.5 rounded-xl">Скасувати</button>
-        <button id="modal-input-btn" class="flex-1 bg-blue-600 py-2.5 rounded-xl font-medium text-white">Зберегти</button>
+        <button onclick="closeModal('modal-input')" class="flex-1 bg-slate-700 py-2.5 rounded-xl text-sm">Скасувати</button>
+        <button id="modal-input-btn" class="flex-1 bg-blue-600 py-2.5 rounded-xl font-medium text-white text-sm">Зберегти</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модалка для Редагування Скарги (textarea) -->
+  <div id="modal-textarea" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4 opacity-0 transition-opacity">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 md:p-6 w-full max-w-md shadow-2xl">
+      <h3 id="modal-textarea-title" class="text-base md:text-lg font-bold mb-4">Редагувати скаргу</h3>
+      <textarea id="modal-textarea-field" rows="3" class="w-full bg-slate-900 border border-slate-600 rounded-xl p-3 text-sm focus:border-blue-500 outline-none resize-none mb-6"></textarea>
+      <div class="flex gap-3">
+        <button onclick="closeModal('modal-textarea')" class="flex-1 bg-slate-700 py-2.5 rounded-xl text-sm">Скасувати</button>
+        <button id="modal-textarea-btn" class="flex-1 bg-blue-600 py-2.5 rounded-xl font-medium text-white text-sm">Зберегти</button>
       </div>
     </div>
   </div>
 
   <!-- Toast -->
-  <div id="toast" class="fixed bottom-5 right-5 bg-slate-800 border border-slate-600 text-white px-4 py-3 rounded-xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-3 pointer-events-none">
+  <div id="toast" class="fixed bottom-5 right-5 left-5 md:left-auto bg-slate-800 border border-slate-600 text-white px-4 py-3 rounded-xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-3 pointer-events-none">
     <span id="toast-icon">✅</span>
     <span id="toast-msg" class="text-sm font-medium">Збережено</span>
   </div>
@@ -127,6 +207,9 @@
 
     let allOrders = {};
     let currentAction = null;
+    let currentTextareaAction = null;
+    let activeTab = 'diag';
+    let currentReportTab = 'parts';
 
     function showToast(msg, icon = '✅') {
       const t = document.getElementById('toast');
@@ -147,11 +230,162 @@
       setTimeout(() => m.classList.add('hidden'), 200);
     }
 
-    // Слухаємо базу даних в реальному часі
+    window.openReportModal = function() {
+      openModal('modal-report');
+      renderReport();
+    }
+
+    window.switchReportTab = function(tab) {
+      currentReportTab = tab;
+      const btnParts = document.getElementById('report-tab-parts');
+      const btnWorks = document.getElementById('report-tab-works');
+      if (tab === 'parts') {
+        btnParts.className = "flex-1 py-2.5 px-4 rounded-xl text-xs md:text-sm font-bold transition-all bg-blue-600 text-white shadow";
+        btnWorks.className = "flex-1 py-2.5 px-4 rounded-xl text-xs md:text-sm font-bold transition-all text-slate-400 hover:text-white bg-slate-800/50";
+      } else {
+        btnWorks.className = "flex-1 py-2.5 px-4 rounded-xl text-xs md:text-sm font-bold transition-all bg-blue-600 text-white shadow";
+        btnParts.className = "flex-1 py-2.5 px-4 rounded-xl text-xs md:text-sm font-bold transition-all text-slate-400 hover:text-white bg-slate-800/50";
+      }
+      renderReport();
+    }
+
+    function renderReport() {
+      const container = document.getElementById('report-content');
+      container.innerHTML = '';
+
+      if (currentReportTab === 'parts') {
+        let hasItems = false;
+        Object.entries(allOrders).forEach(([orderId, o]) => {
+          if (!o.parts || o.parts.length === 0) return;
+          hasItems = true;
+
+          const carWrapper = document.createElement('div');
+          carWrapper.className = "bg-slate-900/70 border border-slate-700/60 rounded-xl p-3 space-y-2";
+          carWrapper.innerHTML = `<h4 class="font-bold text-sm text-blue-400 border-b border-slate-800 pb-1.5">🚗 ${o.car}</h4>`;
+
+          const listDiv = document.createElement('div');
+          listDiv.className = "space-y-2";
+
+          o.parts.forEach((p, pIdx) => {
+            const selectColor = p.status === 'issued' ? 'text-emerald-400' : p.status === 'ordered' ? 'text-amber-400' : 'text-slate-300';
+            const itemEl = document.createElement('div');
+            itemEl.className = "flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-950/50 p-2.5 rounded-lg border border-slate-800";
+            itemEl.innerHTML = `
+              <span class="text-xs md:text-sm text-slate-200">📦 ${p.text}</span>
+              <select id="report-part-${orderId}-${pIdx}" class="bg-slate-800 border border-slate-600 rounded p-1.5 text-xs font-semibold outline-none ${selectColor}">
+                <option value="none" ${p.status==='none'?'selected':''}>Очікує замовлення</option>
+                <option value="ordered" ${p.status==='ordered'?'selected':''}>🟡 Вже замовлено</option>
+                <option value="issued" ${p.status==='issued'?'selected':''}>🟢 Деталь видано</option>
+              </select>
+            `;
+
+            itemEl.querySelector('select').addEventListener('change', (e) => {
+              let updatedParts = [...o.parts];
+              updatedParts[pIdx].status = e.target.value;
+              update(ref(db, 'orders/' + orderId), { parts: updatedParts }).then(() => showToast('Замовлення оновлено'));
+            });
+
+            listDiv.appendChild(itemEl);
+          });
+
+          carWrapper.appendChild(listDiv);
+          container.appendChild(carWrapper);
+        });
+
+        if (!hasItems) {
+          container.innerHTML = `<div class="text-center text-slate-500 py-10 text-sm">Немає доданих запчастин ні в одному авто.</div>`;
+        }
+
+      } else {
+        // Роботи
+        let hasItems = false;
+        Object.entries(allOrders).forEach(([orderId, o]) => {
+          if (!o.works || o.works.length === 0) return;
+          hasItems = true;
+
+          const carWrapper = document.createElement('div');
+          carWrapper.className = "bg-slate-900/70 border border-slate-700/60 rounded-xl p-3 space-y-2";
+          carWrapper.innerHTML = `<h4 class="font-bold text-sm text-blue-400 border-b border-slate-800 pb-1.5">🚗 ${o.car}</h4>`;
+
+          const listDiv = document.createElement('div');
+          listDiv.className = "space-y-2";
+
+          o.works.forEach((w, wIdx) => {
+            const itemEl = document.createElement('div');
+            itemEl.className = "flex items-center justify-between gap-2 bg-slate-950/50 p-2.5 rounded-lg border border-slate-800";
+            itemEl.innerHTML = `
+              <div class="flex items-center gap-2 text-xs md:text-sm">
+                <span>${w.done ? '✅' : '⏳'}</span>
+                <span class="${w.done ? 'text-slate-500 line-through' : 'text-slate-200'}">${w.text}</span>
+              </div>
+              <button id="report-work-btn-${orderId}-${wIdx}" class="text-xs px-3 py-1 rounded font-medium transition-colors ${w.done ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-emerald-600 text-white hover:bg-emerald-500'}">
+                ${w.done ? 'Повернути в роботу' : 'Виконано'}
+              </button>
+            `;
+
+            itemEl.querySelector('button').addEventListener('click', () => {
+              let updatedWorks = [...o.works];
+              updatedWorks[wIdx].done = !updatedWorks[wIdx].done;
+              update(ref(db, 'orders/' + orderId), { works: updatedWorks }).then(() => {
+                showToast('Статус роботи змінено');
+                renderReport();
+              });
+            });
+
+            listDiv.appendChild(itemEl);
+          });
+
+          carWrapper.appendChild(listDiv);
+          container.appendChild(carWrapper);
+        });
+
+        if (!hasItems) {
+          container.innerHTML = `<div class="text-center text-slate-500 py-10 text-sm">Немає доданих робіт ні в одному авто.</div>`;
+        }
+      }
+    }
+
+    window.switchTab = function(tab) {
+      activeTab = tab;
+      const panels = {
+        diag: document.getElementById('panel-diag'),
+        work: document.getElementById('panel-work'),
+        done: document.getElementById('panel-done')
+      };
+      const tabs = {
+        diag: document.getElementById('tab-diag'),
+        work: document.getElementById('tab-work'),
+        done: document.getElementById('tab-done')
+      };
+
+      Object.keys(panels).forEach(key => {
+        if (key === tab) {
+          panels[key].classList.remove('hidden');
+          panels[key].classList.add('flex');
+        } else {
+          panels[key].classList.remove('flex');
+          panels[key].classList.add('hidden');
+        }
+      });
+
+      const styles = {
+        diag: { active: 'bg-amber-950/60 text-amber-400 border border-amber-800/50', inactive: 'text-slate-400' },
+        work: { active: 'bg-blue-950/60 text-blue-400 border border-blue-800/50', inactive: 'text-slate-400' },
+        done: { active: 'bg-emerald-950/60 text-emerald-400 border border-emerald-800/50', inactive: 'text-slate-400' }
+      };
+
+      Object.keys(tabs).forEach(key => {
+        tabs[key].className = `flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${key === tab ? styles[key].active : styles[key].inactive}`;
+      });
+    }
+
     onValue(ordersRef, (snapshot) => {
       const data = snapshot.val();
       allOrders = data ? data : {};
       render();
+      if (!document.getElementById('modal-report').classList.contains('hidden')) {
+        renderReport();
+      }
     });
 
     function render() {
@@ -161,14 +395,20 @@
 
       Object.values(cols).forEach(c => c.innerHTML = '');
 
+      const columnIndexes = { diag: 0, work: 0, done: 0 };
+
       Object.entries(allOrders).forEach(([id, o]) => {
         if (!o.car || !o.car.toLowerCase().includes(searchQuery)) return;
+        if (!cols[o.status]) return;
+
+        const isEven = columnIndexes[o.status] % 2 === 1;
+        columnIndexes[o.status]++;
 
         const card = document.createElement('div');
-        card.className = "bg-slate-800 p-4 rounded-xl border border-slate-700 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-3 group";
+        card.className = `${isEven ? 'bg-slate-800 border-slate-600 shadow-md' : 'bg-slate-900/90 border-slate-700/80 shadow-sm'} p-3.5 md:p-4 rounded-xl border transition-shadow flex flex-col gap-3 group`;
         
         const works = (o.works || []).map((w) => `
-          <div class="flex items-start gap-2 text-[13px] bg-slate-900/50 p-2 rounded-lg border border-slate-700/50">
+          <div class="flex items-start gap-2 text-[13px] bg-slate-950/40 p-2 rounded-lg border border-slate-700/50">
             <span class="mt-0.5">${w.done ? '✅' : '⏳'}</span>
             <span class="${w.done ? 'text-slate-500 line-through' : 'text-slate-200'} leading-tight">${w.text}</span>
           </div>
@@ -177,7 +417,7 @@
         const parts = (o.parts || []).map((p, idx) => {
           let selectColor = p.status === 'issued' ? 'text-emerald-400' : p.status === 'ordered' ? 'text-amber-400' : 'text-slate-400';
           return `
-          <div class="flex flex-col gap-1.5 bg-slate-900 p-2.5 rounded-lg border border-slate-700/50">
+          <div class="flex flex-col gap-1.5 bg-slate-950/50 p-2.5 rounded-lg border border-slate-700/50">
             <span class="text-[13px] text-slate-200 leading-tight">📦 ${p.text}</span>
             <select id="part-sel-${id}-${idx}" class="bg-slate-800 border border-slate-600 rounded p-1.5 text-xs font-semibold outline-none ${selectColor}">
               <option value="none" ${p.status==='none'?'selected':''}>Очікує замовлення</option>
@@ -190,32 +430,40 @@
         card.innerHTML = `
           <div class="flex justify-between items-start gap-2">
             <h4 class="font-bold text-slate-100 text-[15px] leading-tight">${o.car}</h4>
-            <button id="del-btn-${id}" class="text-slate-500 hover:text-red-400 transition-colors p-1 opacity-0 group-hover:opacity-100"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+            <button id="del-btn-${id}" class="text-slate-400 md:text-slate-500 hover:text-red-400 transition-colors p-1 md:opacity-0 md:group-hover:opacity-100"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
           </div>
           
-          ${o.complaints ? `<div class="text-[13px] text-slate-400 bg-slate-900/30 p-2 rounded border border-slate-700/30 border-l-2 border-l-blue-500">💬 ${o.complaints}</div>` : ''}
+          <div id="complaints-block-${id}" class="text-[13px] text-slate-300 bg-slate-950/40 p-2 rounded border border-slate-700/40 border-l-2 border-l-blue-500 cursor-pointer hover:bg-slate-900 transition-colors flex justify-between items-start gap-2" title="Натисніть, щоб змінити скаргу">
+            <span>💬 <span id="complaints-text-${id}">${o.complaints || 'Без скарг (натисніть щоб додати)'}</span></span>
+            <span class="text-[10px] text-slate-400 uppercase tracking-wider shrink-0 mt-0.5">змінити</span>
+          </div>
           
           ${works ? `<div class="space-y-1">${works}</div>` : ''}
           ${parts ? `<div class="space-y-2 mt-1 border-t border-slate-700/50 pt-2">${parts}</div>` : ''}
 
-          <div class="mt-auto pt-3 border-t border-slate-700/50 flex justify-between items-center gap-2">
-            <select id="status-sel-${id}" class="bg-slate-900 border border-slate-600 rounded-lg text-xs font-medium p-1.5 text-slate-200 outline-none focus:border-blue-500">
-              <option value="diag" ${o.status==='diag'?'selected':''}>Діагностика</option>
+          <div class="mt-auto pt-3 border-t border-slate-700/50 flex flex-wrap justify-between items-center gap-2">
+            <select id="status-sel-${id}" class="bg-slate-950 border border-slate-600 rounded-lg text-xs font-medium p-2 text-slate-200 outline-none focus:border-blue-500">
+              <option value="diag" ${o.status==='diag'?'selected':''}>Черга</option>
               <option value="work" ${o.status==='work'?'selected':''}>В роботі</option>
               <option value="done" ${o.status==='done'?'selected':''}>Готово</option>
             </select>
             <div class="flex gap-2">
-              <button id="add-work-${id}" class="text-[11px] font-bold uppercase text-slate-400 hover:text-blue-400 transition-colors bg-slate-700/50 px-2 py-1 rounded">+ Робота</button>
-              <button id="add-part-${id}" class="text-[11px] font-bold uppercase text-slate-400 hover:text-emerald-400 transition-colors bg-slate-700/50 px-2 py-1 rounded">+ Деталь</button>
+              <button id="add-work-${id}" class="text-[11px] font-bold uppercase text-slate-300 md:text-slate-400 hover:text-blue-400 transition-colors bg-slate-950/60 px-2.5 py-1.5 rounded">+ Робота</button>
+              <button id="add-part-${id}" class="text-[11px] font-bold uppercase text-slate-300 md:text-slate-400 hover:text-emerald-400 transition-colors bg-slate-950/60 px-2.5 py-1.5 rounded">+ Деталь</button>
             </div>
           </div>
         `;
 
-        // Прив'язка подій для елементів картки
         card.querySelector(`#del-btn-${id}`).addEventListener('click', () => {
           if(confirm('Точно видалити авто?')) {
             remove(ref(db, 'orders/' + id)).then(() => showToast('Видалено'));
           }
+        });
+
+        card.querySelector(`#complaints-block-${id}`).addEventListener('click', () => {
+          promptTextarea('Редагувати скаргу', o.complaints || '', v => {
+            update(ref(db, 'orders/' + id), { complaints: v }).then(() => showToast('Скаргу оновлено'));
+          });
         });
 
         card.querySelector(`#status-sel-${id}`).addEventListener('change', (e) => {
@@ -244,15 +492,17 @@
           });
         });
 
-        if (cols[o.status]) {
-          cols[o.status].appendChild(card);
-          counts[o.status]++;
-        }
+        cols[o.status].appendChild(card);
+        counts[o.status]++;
       });
 
       document.getElementById('cnt-diag').innerText = counts.diag;
       document.getElementById('cnt-work').innerText = counts.work;
       document.getElementById('cnt-done').innerText = counts.done;
+
+      document.getElementById('badge-diag').innerText = counts.diag;
+      document.getElementById('badge-work').innerText = counts.work;
+      document.getElementById('badge-done').innerText = counts.done;
     }
 
     window.saveNewOrder = function() {
@@ -283,6 +533,23 @@
       if (val && currentAction) { 
         currentAction(val); 
         closeModal('modal-input'); 
+      }
+    });
+
+    function promptTextarea(title, initialValue, callback) {
+      document.getElementById('modal-textarea-title').innerText = title;
+      const input = document.getElementById('modal-textarea-field');
+      input.value = initialValue;
+      currentTextareaAction = callback;
+      openModal('modal-textarea');
+      setTimeout(() => input.focus(), 100);
+    }
+
+    document.getElementById('modal-textarea-btn').addEventListener('click', () => {
+      const val = document.getElementById('modal-textarea-field').value.trim();
+      if (currentTextareaAction) { 
+        currentTextareaAction(val); 
+        closeModal('modal-textarea'); 
       }
     });
 

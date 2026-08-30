@@ -3,35 +3,88 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Майстер СТО</title>
+  <title>СТО Контроль — Майстер</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { background-color: #0f172a; color: #f1f5f9; user-select: none; -webkit-tap-highlight-color: transparent; }
-    .btn-press:active { transform: scale(0.97); }
+    body { background-color: #0f172a; color: #f1f5f9; user-select: none; }
+    .scroll-hide::-webkit-scrollbar { display: none; }
+    .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); }
   </style>
 </head>
-<body class="min-h-screen flex flex-col font-sans pb-10">
+<body class="min-h-screen flex flex-col font-sans">
 
   <!-- Шапка -->
-  <header class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-40 flex justify-between items-center">
-    <h1 class="text-xl font-black tracking-wide text-white">СТО <span class="text-blue-500">PRO</span></h1>
-    <span class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-blue-500/10 text-blue-400 border border-blue-500/20">📱 Майстер</span>
-  </header>
-
-  <main class="flex-1 p-3 mx-auto w-full max-w-lg space-y-5" id="master-cards-list">
-    <div class="text-center py-10 text-slate-500">Підключення до бази даних...</div>
-  </main>
-
-  <!-- Універсальна Модалка для Вводу -->
-  <div id="modal-input" class="fixed inset-0 bg-slate-950/90 backdrop-blur-sm hidden z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity opacity-0">
-    <div class="bg-slate-800 border-t border-slate-700 sm:border rounded-t-3xl sm:rounded-2xl p-6 w-full max-w-sm transform translate-y-full sm:translate-y-0 transition-transform duration-300" id="modal-content">
-      <h3 id="modal-input-title" class="text-lg font-bold mb-4 text-white">Введіть дані</h3>
-      <input id="modal-input-field" type="text" class="w-full bg-slate-900 border border-slate-600 rounded-xl p-4 text-lg focus:border-blue-500 outline-none mb-4 text-white">
-      <div class="flex flex-col gap-3">
-        <button id="modal-input-btn" class="w-full bg-blue-600 active:bg-blue-700 text-white py-4 rounded-xl font-bold text-lg">Зберегти</button>
-        <button onclick="closeModal('modal-input')" class="w-full bg-slate-700 active:bg-slate-600 py-3 rounded-xl font-medium text-slate-300">Скасувати</button>
+  <header class="glass-panel border-b border-slate-700/50 p-3 md:p-4 sticky top-0 z-40 flex flex-col md:flex-row justify-between items-center gap-3 shadow-lg">
+    <div class="flex justify-between items-center w-full md:w-auto">
+      <div class="flex items-center gap-3">
+        <div class="bg-blue-600 p-2 rounded-lg text-white">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9L18 10l-2-4H8L6 10l-2.5 1.1C2.7 11.3 2 12.1 2 13v3c0 .6.4 1 1 1h2m2 0a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0M5 11l1.5-4.5h11L19 11"></path>
+          </svg>
+        </div>
+        <h1 class="text-lg md:text-xl font-bold tracking-wide">СТО <span class="text-blue-500">ГІГАНТ</span></h1>
+      </div>
+      <div class="flex items-center gap-2 md:hidden">
+        <span class="px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/20">🔧 Майстер</span>
       </div>
     </div>
+    
+    <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+      <input type="text" id="searchInput" placeholder="Пошук авто або номеру..." class="w-full md:w-64 bg-slate-800 border border-slate-700 rounded-lg px-3 md:px-4 py-2 text-sm outline-none focus:border-blue-500 transition-colors">
+      <div class="hidden md:flex items-center gap-3">
+        <span class="px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/20">🔧 Майстер</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Головна панель -->
+  <main class="flex-1 p-3 md:p-6 w-full max-w-4xl mx-auto flex flex-col gap-4 md:gap-6">
+    <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-700 shadow-sm flex justify-between items-center">
+      <div>
+        <h2 class="text-base md:text-lg font-semibold">Мої авто в роботі</h2>
+        <p class="text-xs md:text-sm text-slate-400">Відмічайте виконані роботи та замовляйте запчастини</p>
+      </div>
+      <span id="cnt-work" class="bg-blue-950 text-blue-300 border border-blue-800/60 text-xs font-bold px-3 py-1 rounded-md">0</span>
+    </div>
+
+    <!-- Список авто "В роботі" -->
+    <div class="flex flex-col rounded-2xl bg-blue-950/20 border border-blue-900/40 overflow-hidden min-h-[500px]">
+      <div class="p-3 md:p-4 border-b border-blue-900/40 bg-blue-950/40 flex justify-between items-center">
+        <h3 class="font-bold text-blue-400 flex items-center gap-2 text-sm md:text-base"><span class="text-lg md:text-xl">⚙️</span> В роботі</h3>
+      </div>
+      <div id="col-work" class="p-3 md:p-3.5 space-y-4 overflow-y-auto flex-1 scroll-hide"></div>
+    </div>
+  </main>
+
+  <!-- Універсальна Модалка для Вводу (рядок) -->
+  <div id="modal-input" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4 opacity-0 transition-opacity">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 md:p-6 w-full max-w-sm shadow-2xl">
+      <h3 id="modal-input-title" class="text-base md:text-lg font-bold mb-4">Введіть дані</h3>
+      <input id="modal-input-field" type="text" class="w-full bg-slate-900 border border-slate-600 rounded-xl p-3 text-sm focus:border-blue-500 outline-none mb-6">
+      <div class="flex gap-3">
+        <button onclick="closeModal('modal-input')" class="flex-1 bg-slate-700 py-2.5 rounded-xl text-sm">Скасувати</button>
+        <button id="modal-input-btn" class="flex-1 bg-blue-600 py-2.5 rounded-xl font-medium text-white text-sm">Зберегти</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модалка підтвердження для готовності -->
+  <div id="modal-confirm" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4 opacity-0 transition-opacity">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 md:p-6 w-full max-w-sm shadow-2xl text-center">
+      <div class="text-3xl mb-2">✅</div>
+      <h3 class="text-base md:text-lg font-bold mb-2">Завершити роботу?</h3>
+      <p id="modal-confirm-text" class="text-sm text-slate-400 mb-6">Автомобіль буде позначено як готовий.</p>
+      <div class="flex gap-3">
+        <button onclick="closeModal('modal-confirm')" class="flex-1 bg-slate-700 py-2.5 rounded-xl text-sm">Скасувати</button>
+        <button id="modal-confirm-btn" class="flex-1 bg-emerald-600 hover:bg-emerald-500 py-2.5 rounded-xl font-medium text-white text-sm transition-colors">Підтвердити</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-5 right-5 left-5 md:left-auto bg-slate-800 border border-slate-600 text-white px-4 py-3 rounded-xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-3 pointer-events-none">
+    <span id="toast-icon">✅</span>
+    <span id="toast-msg" class="text-sm font-medium">Збережено</span>
   </div>
 
   <script type="module">
@@ -55,32 +108,148 @@
     let allOrders = {};
     let currentAction = null;
 
-    window.openModal = function(id) {
-      const m = document.getElementById(id);
-      const c = document.getElementById('modal-content');
-      m.classList.remove('hidden');
-      setTimeout(() => {
-        m.classList.remove('opacity-0');
-        c.classList.remove('translate-y-full');
-      }, 10);
+    function showToast(msg, icon = '✅') {
+      const t = document.getElementById('toast');
+      document.getElementById('toast-msg').innerText = msg;
+      document.getElementById('toast-icon').innerText = icon;
+      t.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 2500);
     }
 
+    window.openModal = function(id) {
+      const m = document.getElementById(id);
+      m.classList.remove('hidden');
+      setTimeout(() => m.classList.remove('opacity-0'), 10);
+    }
     window.closeModal = function(id) {
       const m = document.getElementById(id);
-      const c = document.getElementById('modal-content');
       m.classList.add('opacity-0');
-      c.classList.add('translate-y-full');
-      setTimeout(() => m.classList.add('hidden'), 300);
+      setTimeout(() => m.classList.add('hidden'), 200);
+    }
+
+    onValue(ordersRef, (snapshot) => {
+      const data = snapshot.val();
+      allOrders = data ? data : {};
+      render();
+    });
+
+    function render() {
+      const searchQuery = (document.getElementById('searchInput')?.value || '').toLowerCase();
+      const colWork = document.getElementById('col-work');
+      colWork.innerHTML = '';
+
+      let count = 0;
+      let columnIndex = 0;
+
+      Object.entries(allOrders).forEach(([id, o]) => {
+        // Майстер бачить лише машини зі статусом 'work'
+        if (o.status !== 'work') return;
+        if (!o.car || !o.car.toLowerCase().includes(searchQuery)) return;
+
+        const isEven = columnIndex % 2 === 1;
+        columnIndex++;
+        count++;
+
+        const card = document.createElement('div');
+        card.className = `${isEven ? 'bg-slate-800 border-slate-600 shadow-md' : 'bg-slate-900/90 border-slate-700/80 shadow-sm'} p-3.5 md:p-4 rounded-xl border transition-shadow flex flex-col gap-3`;
+        
+        // Роботи з прапорцями виконання
+        const works = (o.works || []).map((w, idx) => `
+          <div class="flex items-center gap-2.5 text-[13px] bg-slate-950/40 p-2 rounded-lg border border-slate-700/50">
+            <input type="checkbox" id="work-chk-${id}-${idx}" ${w.done ? 'checked' : ''} class="w-4 h-4 rounded accent-blue-600 cursor-pointer">
+            <span class="${w.done ? 'text-slate-500 line-through' : 'text-slate-200'} leading-tight flex-1">${w.text}</span>
+          </div>
+        `).join('');
+
+        // Деталі зі статусами (тільки перегляд для майстра)
+        const parts = (o.parts || []).map((p) => {
+          let statusBadge = p.status === 'issued' 
+            ? '<span class="text-emerald-400 font-semibold">🟢 Видано</span>' 
+            : p.status === 'ordered' 
+            ? '<span class="text-amber-400 font-semibold">🟡 Замовлено</span>' 
+            : '<span class="text-slate-400 font-semibold">⏳ Очікує</span>';
+
+          return `
+          <div class="flex items-center justify-between bg-slate-950/50 p-2.5 rounded-lg border border-slate-700/50 text-[13px]">
+            <span class="text-slate-200 leading-tight">📦 ${p.text}</span>
+            <span class="text-xs shrink-0 ml-2">${statusBadge}</span>
+          </div>
+        `}).join('');
+
+        card.innerHTML = `
+          <div class="flex justify-between items-center gap-2">
+            <h4 class="font-bold text-slate-100 text-[15px] leading-tight">${o.car}</h4>
+            <button id="mark-done-${id}" class="text-[11px] font-bold uppercase text-emerald-400 hover:text-emerald-300 bg-emerald-950/50 border border-emerald-800/60 px-2.5 py-1.5 rounded-lg transition-colors flex items-center gap-1">
+              <span>✅</span> Позначити як готово
+            </button>
+          </div>
+          
+          ${o.complaints ? `
+            <div class="text-[13px] text-slate-300 bg-slate-950/40 p-2 rounded border border-slate-700/40 border-l-2 border-l-blue-500">
+              💬 ${o.complaints}
+            </div>
+          ` : ''}
+          
+          ${works ? `<div class="space-y-1">${works}</div>` : ''}
+          ${parts ? `<div class="space-y-2 mt-1 border-t border-slate-700/50 pt-2">${parts}</div>` : ''}
+
+          <div class="mt-auto pt-3 border-t border-slate-700/50 flex justify-end items-center gap-2">
+            <button id="add-work-${id}" class="text-[11px] font-bold uppercase text-slate-300 hover:text-blue-400 transition-colors bg-slate-950/60 px-2.5 py-1.5 rounded">+ Робота</button>
+            <button id="add-part-${id}" class="text-[11px] font-bold uppercase text-slate-300 hover:text-emerald-400 transition-colors bg-slate-950/60 px-2.5 py-1.5 rounded">+ Деталь</button>
+          </div>
+        `;
+
+        // Зміна статусу на "Готово" з підтвердженням
+        card.querySelector(`#mark-done-${id}`).addEventListener('click', () => {
+          document.getElementById('modal-confirm-text').innerText = `Ви впевнені, що хочете позначити ${o.car} як готове?`;
+          currentAction = () => {
+            update(ref(db, `orders/${id}`), { status: 'done' }).then(() => showToast('Авто позначено як готово'));
+          };
+          openModal('modal-confirm');
+        });
+
+        // Оновлення стану виконаної роботи через чекбокс
+        (o.works || []).forEach((_, idx) => {
+          card.querySelector(`#work-chk-${id}-${idx}`).addEventListener('change', (e) => {
+            let updatedWorks = [...o.works];
+            updatedWorks[idx].done = e.target.checked;
+            update(ref(db, `orders/${id}`), { works: updatedWorks }).then(() => showToast('Роботу оновлено'));
+          });
+        });
+
+        // Додавання робіт
+        card.querySelector(`#add-work-${id}`).addEventListener('click', () => {
+          promptInput('Додати роботу', 'Заміна масла...', v => {
+            let updatedWorks = [...(o.works || []), { text: v, done: false }];
+            update(ref(db, `orders/${id}`), { works: updatedWorks }).then(() => showToast('Роботу додано'));
+          });
+        });
+
+        // Замовлення деталей
+        card.querySelector(`#add-part-${id}`).addEventListener('click', () => {
+          promptInput('Замовити деталь', 'Фільтр салону', v => {
+            let updatedParts = [...(o.parts || []), { text: v, status: 'none' }];
+            update(ref(db, `orders/${id}`), { parts: updatedParts }).then(() => showToast('Деталь додано'));
+          });
+        });
+
+        colWork.appendChild(card);
+      });
+
+      document.getElementById('cnt-work').innerText = count;
+      if (count === 0) {
+        colWork.innerHTML = `<div class="text-center text-slate-500 py-12 text-sm">Немає авто в роботі.</div>`;
+      }
     }
 
     function promptInput(title, placeholder, callback) {
       document.getElementById('modal-input-title').innerText = title;
       const input = document.getElementById('modal-input-field');
-      input.value = ''; 
+      input.value = '';
       input.placeholder = placeholder;
       currentAction = callback;
       openModal('modal-input');
-      setTimeout(() => input.focus(), 300);
+      setTimeout(() => input.focus(), 100);
     }
 
     document.getElementById('modal-input-btn').addEventListener('click', () => {
@@ -91,103 +260,14 @@
       }
     });
 
-    onValue(ordersRef, (snapshot) => {
-      const data = snapshot.val();
-      allOrders = data ? data : {};
-      renderMaster();
+    document.getElementById('modal-confirm-btn').addEventListener('click', () => {
+      if (currentAction) {
+        currentAction();
+        closeModal('modal-confirm');
+      }
     });
 
-    function renderMaster() {
-      const list = document.getElementById('master-cards-list');
-      list.innerHTML = '';
-      
-      const activeEntries = Object.entries(allOrders).filter(([id, o]) => o.status !== 'done');
-      
-      if (activeEntries.length === 0) {
-        list.innerHTML = `<div class="text-center py-10 text-slate-500"><div class="text-5xl mb-3">☕</div><p>Всі машини готові. Можна відпочити!</p></div>`;
-        return;
-      }
-
-      activeEntries.forEach(([id, o]) => {
-        const card = document.createElement('div');
-        card.className = "bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden shadow-xl mb-4";
-
-        const works = (o.works || []).map((w, idx) => `
-          <button id="toggle-work-${id}-${idx}" class="btn-press w-full text-left p-4 mb-2 rounded-2xl flex items-center gap-3 transition-colors ${w.done ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' : 'bg-slate-900 border border-slate-700 text-slate-200'}">
-            <div class="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center border ${w.done ? 'bg-emerald-500 border-emerald-500 text-slate-900' : 'border-slate-500'}">
-              ${w.done ? '✓' : ''}
-            </div>
-            <span class="font-medium text-[15px] leading-snug">${w.text}</span>
-          </button>
-        `).join('');
-
-        const parts = (o.parts || []).map(p => {
-          const cfg = p.status === 'issued' 
-            ? { bg: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20', txt: 'На складі / Видано' }
-            : p.status === 'ordered' 
-            ? { bg: 'bg-amber-500/10 text-amber-400 border-amber-500/20', txt: 'В дорозі (Замовлено)' }
-            : { bg: 'bg-slate-800 text-slate-400 border-slate-600', txt: 'Треба замовити' };
-            
-          return `
-            <div class="flex justify-between items-center p-3 mb-2 rounded-xl bg-slate-900 border border-slate-700/50">
-              <span class="text-sm font-medium ${p.status === 'issued' ? 'text-slate-500 line-through' : 'text-slate-200'}">⚙️ ${p.text}</span>
-              <span class="text-[10px] uppercase font-bold px-2 py-1 rounded-md border ${cfg.bg}">${cfg.txt}</span>
-            </div>
-          `;
-        }).join('');
-
-        card.innerHTML = `
-          <div class="p-5 border-b border-slate-700 bg-slate-800/80">
-            <div class="flex justify-between items-start mb-2">
-              <span class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest ${o.status === 'diag' ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-500/20 text-blue-400'}">
-                ${o.status === 'diag' ? 'Діагностика' : 'В роботі'}
-              </span>
-            </div>
-            <h2 class="text-2xl font-black text-white leading-tight">${o.car}</h2>
-            ${o.complaints ? `<div class="mt-3 text-sm text-slate-300 bg-slate-700/30 p-3 rounded-xl border border-slate-600/50">💬 ${o.complaints}</div>` : ''}
-          </div>
-
-          <div class="p-5 bg-slate-800">
-            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Список робіт</h4>
-            <div id="works-container-${id}">${works}</div>
-            <button id="add-work-${id}" class="w-full mt-1 py-4 border-2 border-dashed border-slate-600 text-slate-400 hover:text-slate-300 hover:border-slate-500 rounded-2xl font-bold text-sm transition-colors uppercase tracking-wide">
-              + Додати дефект / роботу
-            </button>
-
-            ${parts ? `<h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mt-6 mb-3">Запчастини</h4>${parts}` : ''}
-            
-            <button id="add-part-${id}" class="w-full mt-2 py-3 bg-blue-600/10 text-blue-400 border border-blue-500/30 rounded-xl font-bold text-sm uppercase tracking-wide active:bg-blue-600/20 transition-colors">
-              + Потрібна деталь
-            </button>
-          </div>
-        `;
-
-        // Обробка кліків по роботах (зміна галочки)
-        (o.works || []).forEach((_, idx) => {
-          card.querySelector(`#toggle-work-${id}-${idx}`).addEventListener('click', () => {
-            let updatedWorks = [...o.works];
-            updatedWorks[idx].done = !updatedWorks[idx].done;
-            update(ref(db, 'orders/' + id), { works: updatedWorks });
-          });
-        });
-
-        card.querySelector(`#add-work-${id}`).addEventListener('click', () => {
-          promptInput('Що знайшли / зробили?', 'Заміна колодок', v => {
-            let updatedWorks = [...(o.works || []), { text: v, done: false }];
-            update(ref(db, 'orders/' + id), { works: updatedWorks });
-          });
-        });
-
-        card.querySelector(`#add-part-${id}`).addEventListener('click', () => {
-          promptInput('Яка запчастина потрібна?', 'Масляний фільтр', v => {
-            let updatedParts = [...(o.parts || []), { text: v, status: 'none' }];
-            update(ref(db, 'orders/' + id), { parts: updatedParts });
-          });
-        });
-
-        list.appendChild(card);
-      });
-    }
+    document.getElementById('searchInput').addEventListener('input', render);
   </script>
 </body>
 </html>
