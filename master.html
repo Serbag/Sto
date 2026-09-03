@@ -42,19 +42,38 @@
     <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-700 shadow-sm flex justify-between items-center">
       <div>
         <h2 class="text-base md:text-lg font-semibold">Мої авто в роботі</h2>
-        <p class="text-xs md:text-sm text-slate-400">Відмічайте виконані роботи та замовляйте запчастини</p>
+        <p class="text-xs md:text-sm text-slate-400">Натисніть на авто для перегляду та керування роботами</p>
       </div>
       <span id="cnt-work" class="bg-blue-950 text-blue-300 border border-blue-800/60 text-xs font-bold px-3 py-1 rounded-md">0</span>
     </div>
 
-    <!-- Список авто "В роботі" -->
+    <!-- Список авто (лише назви) -->
     <div class="flex flex-col rounded-2xl bg-blue-950/20 border border-blue-900/40 overflow-hidden min-h-[500px]">
       <div class="p-3 md:p-4 border-b border-blue-900/40 bg-blue-950/40 flex justify-between items-center">
         <h3 class="font-bold text-blue-400 flex items-center gap-2 text-sm md:text-base"><span class="text-lg md:text-xl">⚙️</span> В роботі</h3>
       </div>
-      <div id="col-work" class="p-3 md:p-3.5 space-y-4 overflow-y-auto flex-1 scroll-hide"></div>
+      <div id="col-work" class="p-3 md:p-4 grid grid-cols-1 sm:grid-cols-2 gap-3 overflow-y-auto flex-1 scroll-hide content-start"></div>
     </div>
   </main>
+
+  <!-- Модальне вікно деталей авто -->
+  <div id="modal-car-details" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4 opacity-0 transition-opacity">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 md:p-6 w-full max-w-lg shadow-2xl max-h-[90vh] flex flex-col">
+      <div class="flex justify-between items-center pb-3 border-b border-slate-700">
+        <h3 id="modal-car-title" class="text-lg font-bold text-slate-100"></h3>
+        <button onclick="closeModal('modal-car-details')" class="text-slate-400 hover:text-white text-xl font-bold">✕</button>
+      </div>
+
+      <div id="modal-car-body" class="py-4 overflow-y-auto space-y-4 flex-1 scroll-hide"></div>
+
+      <div class="pt-3 border-t border-slate-700 flex justify-between items-center gap-2">
+        <button id="modal-btn-done" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-4 py-2 rounded-xl text-sm transition-colors flex items-center gap-1">
+          ✅ Позначити як готово
+        </button>
+        <button onclick="closeModal('modal-car-details')" class="bg-slate-700 hover:bg-slate-600 py-2 px-4 rounded-xl text-sm">Закрити</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Універсальна Модалка для Вводу (рядок) -->
   <div id="modal-input" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4 opacity-0 transition-opacity">
@@ -107,6 +126,7 @@
 
     let allOrders = {};
     let currentAction = null;
+    let activeOrderId = null;
 
     function showToast(msg, icon = '✅') {
       const t = document.getElementById('toast');
@@ -131,6 +151,9 @@
       const data = snapshot.val();
       allOrders = data ? data : {};
       render();
+      if (activeOrderId && allOrders[activeOrderId]) {
+        renderModalContent(activeOrderId);
+      }
     });
 
     function render() {
@@ -139,98 +162,32 @@
       colWork.innerHTML = '';
 
       let count = 0;
-      let columnIndex = 0;
 
       Object.entries(allOrders).forEach(([id, o]) => {
-        // Майстер бачить лише машини зі статусом 'work'
         if (o.status !== 'work') return;
         if (!o.car || !o.car.toLowerCase().includes(searchQuery)) return;
 
-        const isEven = columnIndex % 2 === 1;
-        columnIndex++;
         count++;
 
+        const completedWorks = (o.works || []).filter(w => w.done).length;
+        const totalWorks = (o.works || []).length;
+
         const card = document.createElement('div');
-        card.className = `${isEven ? 'bg-slate-800 border-slate-600 shadow-md' : 'bg-slate-900/90 border-slate-700/80 shadow-sm'} p-3.5 md:p-4 rounded-xl border transition-shadow flex flex-col gap-3`;
+        card.className = 'bg-slate-800 hover:bg-slate-750 border border-slate-700 hover:border-blue-500/50 p-4 rounded-xl cursor-pointer transition-all flex justify-between items-center shadow-md group';
         
-        // Роботи з прапорцями виконання
-        const works = (o.works || []).map((w, idx) => `
-          <div class="flex items-center gap-2.5 text-[13px] bg-slate-950/40 p-2 rounded-lg border border-slate-700/50">
-            <input type="checkbox" id="work-chk-${id}-${idx}" ${w.done ? 'checked' : ''} class="w-4 h-4 rounded accent-blue-600 cursor-pointer">
-            <span class="${w.done ? 'text-slate-500 line-through' : 'text-slate-200'} leading-tight flex-1">${w.text}</span>
-          </div>
-        `).join('');
-
-        // Деталі зі статусами (тільки перегляд для майстра)
-        const parts = (o.parts || []).map((p) => {
-          let statusBadge = p.status === 'issued' 
-            ? '<span class="text-emerald-400 font-semibold">🟢 Видано</span>' 
-            : p.status === 'ordered' 
-            ? '<span class="text-amber-400 font-semibold">🟡 Замовлено</span>' 
-            : '<span class="text-slate-400 font-semibold">⏳ Очікує</span>';
-
-          return `
-          <div class="flex items-center justify-between bg-slate-950/50 p-2.5 rounded-lg border border-slate-700/50 text-[13px]">
-            <span class="text-slate-200 leading-tight">📦 ${p.text}</span>
-            <span class="text-xs shrink-0 ml-2">${statusBadge}</span>
-          </div>
-        `}).join('');
-
         card.innerHTML = `
-          <div class="flex justify-between items-center gap-2">
-            <h4 class="font-bold text-slate-100 text-[15px] leading-tight">${o.car}</h4>
-            <button id="mark-done-${id}" class="text-[11px] font-bold uppercase text-emerald-400 hover:text-emerald-300 bg-emerald-950/50 border border-emerald-800/60 px-2.5 py-1.5 rounded-lg transition-colors flex items-center gap-1">
-              <span>✅</span> Позначити як готово
-            </button>
-          </div>
-          
-          ${o.complaints ? `
-            <div class="text-[13px] text-slate-300 bg-slate-950/40 p-2 rounded border border-slate-700/40 border-l-2 border-l-blue-500">
-              💬 ${o.complaints}
+          <div class="flex items-center gap-3">
+            <span class="text-xl">🚗</span>
+            <div>
+              <h4 class="font-bold text-slate-100 text-base group-hover:text-blue-400 transition-colors">${o.car}</h4>
+              <p class="text-xs text-slate-400">${totalWorks > 0 ? `Виконано ${completedWorks} з ${totalWorks} робіт` : 'Роботи не вказані'}</p>
             </div>
-          ` : ''}
-          
-          ${works ? `<div class="space-y-1">${works}</div>` : ''}
-          ${parts ? `<div class="space-y-2 mt-1 border-t border-slate-700/50 pt-2">${parts}</div>` : ''}
-
-          <div class="mt-auto pt-3 border-t border-slate-700/50 flex justify-end items-center gap-2">
-            <button id="add-work-${id}" class="text-[11px] font-bold uppercase text-slate-300 hover:text-blue-400 transition-colors bg-slate-950/60 px-2.5 py-1.5 rounded">+ Робота</button>
-            <button id="add-part-${id}" class="text-[11px] font-bold uppercase text-slate-300 hover:text-emerald-400 transition-colors bg-slate-950/60 px-2.5 py-1.5 rounded">+ Деталь</button>
           </div>
+          <span class="text-slate-400 group-hover:text-blue-400 transition-colors">➔</span>
         `;
 
-        // Зміна статусу на "Готово" з підтвердженням
-        card.querySelector(`#mark-done-${id}`).addEventListener('click', () => {
-          document.getElementById('modal-confirm-text').innerText = `Ви впевнені, що хочете позначити ${o.car} як готове?`;
-          currentAction = () => {
-            update(ref(db, `orders/${id}`), { status: 'done' }).then(() => showToast('Авто позначено як готово'));
-          };
-          openModal('modal-confirm');
-        });
-
-        // Оновлення стану виконаної роботи через чекбокс
-        (o.works || []).forEach((_, idx) => {
-          card.querySelector(`#work-chk-${id}-${idx}`).addEventListener('change', (e) => {
-            let updatedWorks = [...o.works];
-            updatedWorks[idx].done = e.target.checked;
-            update(ref(db, `orders/${id}`), { works: updatedWorks }).then(() => showToast('Роботу оновлено'));
-          });
-        });
-
-        // Додавання робіт
-        card.querySelector(`#add-work-${id}`).addEventListener('click', () => {
-          promptInput('Додати роботу', 'Заміна масла...', v => {
-            let updatedWorks = [...(o.works || []), { text: v, done: false }];
-            update(ref(db, `orders/${id}`), { works: updatedWorks }).then(() => showToast('Роботу додано'));
-          });
-        });
-
-        // Замовлення деталей
-        card.querySelector(`#add-part-${id}`).addEventListener('click', () => {
-          promptInput('Замовити деталь', 'Фільтр салону', v => {
-            let updatedParts = [...(o.parts || []), { text: v, status: 'none' }];
-            update(ref(db, `orders/${id}`), { parts: updatedParts }).then(() => showToast('Деталь додано'));
-          });
+        card.addEventListener('click', () => {
+          openCarModal(id);
         });
 
         colWork.appendChild(card);
@@ -238,8 +195,118 @@
 
       document.getElementById('cnt-work').innerText = count;
       if (count === 0) {
-        colWork.innerHTML = `<div class="text-center text-slate-500 py-12 text-sm">Немає авто в роботі.</div>`;
+        colWork.innerHTML = `<div class="col-span-full text-center text-slate-500 py-12 text-sm">Немає авто в роботі.</div>`;
       }
+    }
+
+    function openCarModal(id) {
+      activeOrderId = id;
+      renderModalContent(id);
+      openModal('modal-car-details');
+    }
+
+    function renderModalContent(id) {
+      const o = allOrders[id];
+      if (!o) return;
+
+      document.getElementById('modal-car-title').innerText = o.car;
+
+      const body = document.getElementById('modal-car-body');
+      
+      const worksHtml = (o.works || []).map((w, idx) => `
+        <div class="flex items-center gap-2.5 bg-slate-900/80 p-2.5 rounded-lg border border-slate-700/50">
+          <input type="checkbox" id="modal-chk-${idx}" ${w.done ? 'checked' : ''} class="w-4 h-4 rounded accent-blue-600 cursor-pointer">
+          <span class="${w.done ? 'text-slate-500 line-through' : 'text-slate-200'} text-sm leading-tight flex-1">${w.text}</span>
+        </div>
+      `).join('');
+
+      const partsHtml = (o.parts || []).map((p) => {
+        let statusBadge = p.status === 'issued' 
+          ? '<span class="text-emerald-400 font-semibold">🟢 Видано</span>' 
+          : p.status === 'ordered' 
+          ? '<span class="text-amber-400 font-semibold">🟡 Замовлено</span>' 
+          : '<span class="text-slate-400 font-semibold">⏳ Очікує</span>';
+
+        return `
+        <div class="flex items-center justify-between bg-slate-900/80 p-2.5 rounded-lg border border-slate-700/50 text-sm">
+          <span class="text-slate-200">📦 ${p.text}</span>
+          <span class="text-xs shrink-0 ml-2">${statusBadge}</span>
+        </div>
+      `}).join('');
+
+      body.innerHTML = `
+        ${o.complaints ? `
+          <div class="text-sm text-slate-300 bg-slate-900/60 p-3 rounded-xl border border-slate-700/60 border-l-4 border-l-blue-500">
+            <span class="font-bold text-slate-400 block text-xs mb-1">Скарги клієнта:</span>
+            💬 ${o.complaints}
+          </div>
+        ` : ''}
+
+        <div class="space-y-2">
+          <div class="flex justify-between items-center">
+            <h5 class="text-xs font-bold uppercase tracking-wider text-slate-400">Перелік робіт</h5>
+            <button id="modal-add-work" class="text-xs font-bold uppercase text-blue-400 hover:underline">+ Додати роботу</button>
+          </div>
+          ${worksHtml || '<div class="text-xs text-slate-500 py-1">Немає робіт</div>'}
+        </div>
+
+        <div class="space-y-2 pt-2 border-t border-slate-700/50">
+          <div class="flex justify-between items-center">
+            <h5 class="text-xs font-bold uppercase tracking-wider text-slate-400">Запчастини</h5>
+            <button id="modal-add-part" class="text-xs font-bold uppercase text-emerald-400 hover:underline">+ Замовити деталь</button>
+          </div>
+          ${partsHtml || '<div class="text-xs text-slate-500 py-1">Немає запчастин</div>'}
+        </div>
+
+        <div class="space-y-2 pt-2 border-t border-slate-700/50">
+          <h5 class="text-xs font-bold uppercase tracking-wider text-amber-400">Коментар майстра</h5>
+          <textarea id="modal-master-comment" rows="2" placeholder="Напишіть коментар до авто..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm text-slate-200 outline-none focus:border-amber-500 transition-colors">${o.masterComment || ''}</textarea>
+          <button id="modal-save-comment" class="w-full bg-amber-600/20 border border-amber-600/40 hover:bg-amber-600/30 text-amber-300 text-xs font-bold py-2 rounded-lg transition-colors">Зберегти коментар</button>
+        </div>
+      `;
+
+      // Чекбокси робіт
+      (o.works || []).forEach((_, idx) => {
+        document.getElementById(`modal-chk-${idx}`)?.addEventListener('change', (e) => {
+          let updatedWorks = [...o.works];
+          updatedWorks[idx].done = e.target.checked;
+          update(ref(db, `orders/${id}`), { works: updatedWorks }).then(() => showToast('Роботу оновлено'));
+        });
+      });
+
+      // Додавання робіт
+      document.getElementById('modal-add-work')?.addEventListener('click', () => {
+        promptInput('Додати роботу', 'Заміна масла...', v => {
+          let updatedWorks = [...(o.works || []), { text: v, done: false }];
+          update(ref(db, `orders/${id}`), { works: updatedWorks }).then(() => showToast('Роботу додано'));
+        });
+      });
+
+      // Додавання деталей
+      document.getElementById('modal-add-part')?.addEventListener('click', () => {
+        promptInput('Замовити деталь', 'Фільтр салону', v => {
+          let updatedParts = [...(o.parts || []), { text: v, status: 'none' }];
+          update(ref(db, `orders/${id}`), { parts: updatedParts }).then(() => showToast('Деталь додано'));
+        });
+      });
+
+      // Збереження коментаря майстра
+      document.getElementById('modal-save-comment')?.addEventListener('click', () => {
+        const val = document.getElementById('modal-master-comment').value.trim();
+        update(ref(db, `orders/${id}`), { masterComment: val }).then(() => showToast('Коментар збережено'));
+      });
+
+      // Підтвердження готовності
+      document.getElementById('modal-btn-done').onclick = () => {
+        document.getElementById('modal-confirm-text').innerText = `Ви впевнені, що хочете позначити ${o.car} як готове?`;
+        currentAction = () => {
+          update(ref(db, `orders/${id}`), { status: 'done' }).then(() => {
+            closeModal('modal-car-details');
+            showToast('Авто позначено як готово');
+          });
+        };
+        openModal('modal-confirm');
+      };
     }
 
     function promptInput(title, placeholder, callback) {

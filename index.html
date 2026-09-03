@@ -11,10 +11,9 @@
     .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); }
   </style>
 </head>
-<body class="min-h-screen flex flex-col font-sans">
+<body class="h-screen flex flex-col font-sans overflow-hidden">
 
-  <!-- Шапка -->
-  <header class="glass-panel border-b border-slate-700/50 p-3 md:p-4 sticky top-0 z-40 flex flex-col md:flex-row justify-between items-center gap-3 shadow-lg">
+  <header class="glass-panel border-b border-slate-700/50 p-3 md:p-4 sticky top-0 z-40 flex flex-col md:flex-row justify-between items-center gap-3 shadow-lg shrink-0">
     <div class="flex justify-between items-center w-full md:w-auto">
       <div class="flex items-center gap-3">
         <div class="bg-blue-600 p-2 rounded-lg text-white">
@@ -35,7 +34,7 @@
     <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
       <input type="text" id="searchInput" placeholder="Пошук авто або номеру..." class="w-full md:w-64 bg-slate-800 border border-slate-700 rounded-lg px-3 md:px-4 py-2 text-sm outline-none focus:border-blue-500 transition-colors">
       <div class="hidden md:flex items-center gap-3">
-        <button onclick="openReportModal()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 transition-colors">
+        <button onclick="openReportModal()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 transition-colors shadow-lg">
           📊 Звіт
         </button>
         <span class="px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">💻 Керівник</span>
@@ -43,70 +42,114 @@
     </div>
   </header>
 
-  <!-- Головна панель -->
-  <main class="flex-1 p-3 md:p-6 w-full max-w-screen-2xl mx-auto flex flex-col gap-4 md:gap-6">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-slate-800/50 p-4 rounded-2xl border border-slate-700 shadow-sm">
-      <div>
-        <h2 class="text-base md:text-lg font-semibold">Управління ремонтом</h2>
-        <p class="text-xs md:text-sm text-slate-400">Слідкуйте за статусами та замовляйте запчастини</p>
-      </div>
-      <button onclick="openModal('modal-new-order')" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl font-medium shadow-lg shadow-blue-900/20 transition-all flex items-center justify-center gap-2 text-sm">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-        Нове авто
-      </button>
-    </div>
-
-    <!-- Мобільні таби перемикання колонок (видно лише на мобільних) -->
-    <div class="flex md:hidden bg-slate-800/80 p-1.5 rounded-2xl border border-slate-700 gap-1 shadow-sm">
-      <button onclick="switchTab('diag')" id="tab-diag" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 bg-amber-950/60 text-amber-400 border border-amber-800/50">
-        <span>🔍</span> Черга <span id="badge-diag" class="bg-amber-950 px-1.5 py-0.5 rounded text-[10px]">0</span>
-      </button>
-      <button onclick="switchTab('work')" id="tab-work" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 text-slate-400">
-        <span>⚙️</span> В роботі <span id="badge-work" class="bg-slate-800 px-1.5 py-0.5 rounded text-[10px]">0</span>
-      </button>
-      <button onclick="switchTab('done')" id="tab-done" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 text-slate-400">
-        <span>✅</span> Готово <span id="badge-done" class="bg-slate-800 px-1.5 py-0.5 rounded text-[10px]">0</span>
-      </button>
-    </div>
-
-    <!-- Канбан Дошка -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 pb-6">
+  <main class="flex-1 p-3 md:p-6 w-full max-w-screen-2xl mx-auto flex flex-col md:flex-row gap-4 md:gap-6 min-h-0 overflow-hidden">
+    
+    <aside class="w-full md:w-80 lg:w-96 flex flex-col rounded-2xl bg-slate-900/60 border border-slate-800 overflow-hidden shrink-0 h-full">
       
-      <!-- Колонка: Черга -->
-      <div id="panel-diag" class="column-panel flex flex-col rounded-2xl bg-amber-950/20 border border-amber-900/40 overflow-hidden h-[500px] md:h-[70vh]">
-        <div class="hidden md:flex p-3 md:p-4 border-b border-amber-900/40 bg-amber-950/40 justify-between items-center">
-          <h3 class="font-bold text-amber-400 flex items-center gap-2 text-sm md:text-base"><span class="text-lg md:text-xl">🔍</span> Черга</h3>
-          <span id="cnt-diag" class="bg-amber-950 text-amber-300 border border-amber-800/60 text-xs font-bold px-2 py-0.5 md:px-2.5 md:py-1 rounded-md">0</span>
+      <div class="p-3 border-b border-slate-800 bg-slate-900/90 flex flex-col gap-3 shrink-0">
+        <div class="flex justify-between items-center">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Автомобілі</span>
+          <button onclick="openModal('modal-new-order')" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-xl font-medium shadow transition-all flex items-center gap-1.5 text-xs">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            Нове авто
+          </button>
         </div>
-        <div id="col-diag" class="p-3 md:p-3.5 space-y-4 overflow-y-auto flex-1 scroll-hide"></div>
+
+        <div class="grid grid-cols-4 gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+          <button onclick="setFilter('diag')" id="filter-diag" class="py-1.5 rounded-lg transition-all flex flex-col items-center justify-center bg-blue-600 text-white shadow" title="Черга">
+            <span class="text-sm">🔍</span>
+            <span class="text-[9px] font-bold leading-tight">Черга</span>
+            <span id="cnt-diag" class="text-[9px] opacity-80">0</span>
+          </button>
+          <button onclick="setFilter('work')" id="filter-work" class="py-1.5 rounded-lg transition-all flex flex-col items-center justify-center text-slate-400 hover:text-slate-200" title="В роботі">
+            <span class="text-sm">⚙️</span>
+            <span class="text-[9px] font-bold leading-tight">В роботі</span>
+            <span id="cnt-work" class="text-[9px] opacity-80">0</span>
+          </button>
+          <button onclick="setFilter('done')" id="filter-done" class="py-1.5 rounded-lg transition-all flex flex-col items-center justify-center text-slate-400 hover:text-slate-200" title="Готово">
+            <span class="text-sm">✅</span>
+            <span class="text-[9px] font-bold leading-tight">Готово</span>
+            <span id="cnt-done" class="text-[9px] opacity-80">0</span>
+          </button>
+          <button onclick="setFilter('all')" id="filter-all" class="py-1.5 rounded-lg transition-all flex flex-col items-center justify-center text-slate-400 hover:text-slate-200" title="Усі авто">
+            <span class="text-sm">🚘</span>
+            <span class="text-[9px] font-bold leading-tight">Усі</span>
+            <span id="cnt-all" class="text-[9px] opacity-80">0</span>
+          </button>
+        </div>
       </div>
 
-      <!-- Колонка: В роботі -->
-      <div id="panel-work" class="column-panel hidden md:flex flex-col rounded-2xl bg-blue-950/20 border border-blue-900/40 overflow-hidden h-[500px] md:h-[70vh]">
-        <div class="hidden md:flex p-3 md:p-4 border-b border-blue-900/40 bg-blue-950/40 justify-between items-center">
-          <h3 class="font-bold text-blue-400 flex items-center gap-2 text-sm md:text-base"><span class="text-lg md:text-xl">⚙️</span> В роботі</h3>
-          <span id="cnt-work" class="bg-blue-950 text-blue-300 border border-blue-800/60 text-xs font-bold px-2 py-0.5 md:px-2.5 md:py-1 rounded-md">0</span>
-        </div>
-        <div id="col-work" class="p-3 md:p-3.5 space-y-4 overflow-y-auto flex-1 scroll-hide"></div>
-      </div>
+      <div id="sidebar-car-list" class="p-3 pb-16 space-y-2.5 overflow-y-auto flex-1 scroll-hide"></div>
+    </aside>
 
-      <!-- Колонка: Готово -->
-      <div id="panel-done" class="column-panel hidden md:flex flex-col rounded-2xl bg-emerald-950/20 border border-emerald-900/40 overflow-hidden h-[500px] md:h-[70vh]">
-        <div class="hidden md:flex p-3 md:p-4 border-b border-emerald-900/40 bg-emerald-950/40 justify-between items-center">
-          <h3 class="font-bold text-emerald-400 flex items-center gap-2 text-sm md:text-base"><span class="text-lg md:text-xl">✅</span> Готово</h3>
-          <span id="cnt-done" class="bg-emerald-950 text-emerald-300 border border-emerald-800/60 text-xs font-bold px-2 py-0.5 md:px-2.5 md:py-1 rounded-md">0</span>
+    <section class="hidden md:flex flex-1 flex-col rounded-2xl bg-slate-900/40 border border-slate-800 overflow-hidden h-full">
+      <div id="desktop-detail-container" class="h-full flex flex-col relative">
+        <div id="desktop-empty-state" class="flex-1 flex flex-col items-center justify-center text-slate-500 p-8 text-center space-y-3">
+          <div class="text-5xl opacity-40">🚗</div>
+          <p class="text-sm">Оберіть автомобіль із списку ліворуч або відкрийте звіт.</p>
         </div>
-        <div id="col-done" class="p-3 md:p-3.5 space-y-4 overflow-y-auto flex-1 scroll-hide"></div>
-      </div>
 
-    </div>
+        <div id="desktop-car-content" class="hidden h-full flex-col">
+          <div class="p-4 border-b border-slate-800 bg-slate-900/80 flex justify-between items-center">
+            <div id="desk-detail-car-header" class="flex items-center gap-2 cursor-pointer group" title="Натисніть, щоб змінити марку/номер">
+              <h3 id="desk-detail-car-title" class="text-xl font-bold text-slate-100 group-hover:text-blue-400 transition-colors">🚗 ...</h3>
+              <svg class="w-4 h-4 text-slate-500 group-hover:text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+            </div>
+            
+            <div class="flex items-center gap-3">
+              <span class="text-xs text-slate-400">Статус:</span>
+              <select id="desk-detail-status-sel" class="bg-slate-800 border border-slate-700 rounded-lg text-xs font-semibold p-2 text-slate-200 outline-none focus:border-blue-500">
+                <option value="diag">🔍 Черга</option>
+                <option value="work">⚙️ В роботі</option>
+                <option value="done">✅ Готово</option>
+              </select>
+            </div>
+          </div>
+          <div class="p-6 overflow-y-auto space-y-5 scroll-hide flex-1" id="desk-detail-car-body"></div>
+        </div>
+
+        <div id="desktop-report-content" class="hidden h-full flex-col">
+          <div class="p-4 border-b border-slate-800 bg-slate-900/80 flex justify-between items-center">
+            <h3 class="text-xl font-bold text-slate-100 flex items-center gap-2">📊 Загальний звіт СТО</h3>
+            <div class="flex gap-2">
+              <button onclick="switchReportTab('parts')" id="desk-report-tab-parts" class="py-1.5 px-3 rounded-lg text-xs font-bold transition-all bg-blue-600 text-white shadow">📦 Запчастини</button>
+              <button onclick="switchReportTab('works')" id="desk-report-tab-works" class="py-1.5 px-3 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white bg-slate-800">🛠️ Роботи</button>
+            </div>
+          </div>
+          <div class="p-6 overflow-y-auto space-y-4 scroll-hide flex-1" id="desk-report-body"></div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
-  <!-- Модалка: Звіт (Запчастини / Роботи) -->
-  <div id="modal-report" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-3 md:p-6 opacity-0 transition-opacity">
+  <div id="modal-car-details" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-3 md:hidden opacity-0 transition-opacity">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden transform scale-95 transition-transform">
+      <div class="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-900/50">
+        <div id="detail-car-header" class="flex items-center gap-2 cursor-pointer group">
+          <h3 id="detail-car-title" class="text-lg font-bold text-slate-100 group-hover:text-blue-400 transition-colors">🚗 ...</h3>
+          <svg class="w-4 h-4 text-slate-500 group-hover:text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+        </div>
+        <button onclick="closeModal('modal-car-details')" class="text-slate-400 hover:text-white p-1 rounded-lg">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <div class="p-4 overflow-y-auto space-y-4 scroll-hide flex-1" id="detail-car-body"></div>
+
+      <div class="p-3 border-t border-slate-700 bg-slate-900/55 flex justify-between items-center">
+        <select id="detail-status-sel" class="bg-slate-900 border border-slate-600 rounded-lg text-xs font-medium p-2 text-slate-200 outline-none focus:border-blue-500">
+          <option value="diag">Черга</option>
+          <option value="work">В роботі</option>
+          <option value="done">Готово</option>
+        </select>
+        <button onclick="closeModal('modal-car-details')" class="bg-slate-700 hover:bg-slate-600 px-5 py-2 rounded-xl text-sm font-medium">Закрити</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-report" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-3 md:hidden opacity-0 transition-opacity">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-3xl h-[85vh] flex flex-col shadow-2xl overflow-hidden transform scale-95 transition-transform">
-      
-      <!-- Шапка модалки -->
       <div class="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-900/50">
         <h3 class="text-lg font-bold flex items-center gap-2">📊 Загальний звіт СТО</h3>
         <button onclick="closeModal('modal-report')" class="text-slate-400 hover:text-white p-1 rounded-lg">
@@ -114,29 +157,23 @@
         </button>
       </div>
 
-      <!-- Таби звіту -->
       <div class="flex border-b border-slate-700 bg-slate-900/30 p-2 gap-2">
-        <button onclick="switchReportTab('parts')" id="report-tab-parts" class="flex-1 py-2.5 px-4 rounded-xl text-xs md:text-sm font-bold transition-all bg-blue-600 text-white shadow">
+        <button onclick="switchReportTab('parts')" id="report-tab-parts" class="flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all bg-blue-600 text-white shadow">
           📦 Запчастини
         </button>
-        <button onclick="switchReportTab('works')" id="report-tab-works" class="flex-1 py-2.5 px-4 rounded-xl text-xs md:text-sm font-bold transition-all text-slate-400 hover:text-white bg-slate-800/50">
+        <button onclick="switchReportTab('works')" id="report-tab-works" class="flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white bg-slate-800/50">
           🛠️ Роботи
         </button>
       </div>
 
-      <!-- Контент звіту -->
-      <div class="p-4 flex-1 overflow-y-auto scroll-hide space-y-3" id="report-content">
-        <!-- Динамічно заповнюється -->
-      </div>
+      <div class="p-4 flex-1 overflow-y-auto scroll-hide space-y-3" id="report-content"></div>
 
-      <!-- Футер модалки -->
       <div class="p-3 border-t border-slate-700 bg-slate-900/55 flex justify-end">
         <button onclick="closeModal('modal-report')" class="bg-slate-700 hover:bg-slate-600 px-5 py-2 rounded-xl text-sm font-medium">Закрити</button>
       </div>
     </div>
   </div>
 
-  <!-- Модалка: Нове Авто -->
   <div id="modal-new-order" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4 opacity-0 transition-opacity">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 md:p-6 w-full max-w-md shadow-2xl transform scale-95 transition-transform">
       <h3 class="text-lg md:text-xl font-bold mb-4">🚗 Прийом авто</h3>
@@ -157,7 +194,6 @@
     </div>
   </div>
 
-  <!-- Універсальна Модалка для Вводу (рядок) -->
   <div id="modal-input" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4 opacity-0 transition-opacity">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 md:p-6 w-full max-w-sm shadow-2xl">
       <h3 id="modal-input-title" class="text-base md:text-lg font-bold mb-4">Введіть дані</h3>
@@ -169,7 +205,6 @@
     </div>
   </div>
 
-  <!-- Модалка для Редагування Скарги (textarea) -->
   <div id="modal-textarea" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4 opacity-0 transition-opacity">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 md:p-6 w-full max-w-md shadow-2xl">
       <h3 id="modal-textarea-title" class="text-base md:text-lg font-bold mb-4">Редагувати скаргу</h3>
@@ -181,7 +216,6 @@
     </div>
   </div>
 
-  <!-- Toast -->
   <div id="toast" class="fixed bottom-5 right-5 left-5 md:left-auto bg-slate-800 border border-slate-600 text-white px-4 py-3 rounded-xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-3 pointer-events-none">
     <span id="toast-icon">✅</span>
     <span id="toast-msg" class="text-sm font-medium">Збережено</span>
@@ -208,301 +242,452 @@
     let allOrders = {};
     let currentAction = null;
     let currentTextareaAction = null;
-    let activeTab = 'diag';
+    let currentFilter = 'diag'; 
     let currentReportTab = 'parts';
+    let activeCarId = null;
+    let isDesktopReportActive = false;
 
-    function showToast(msg, icon = '✅') {
+    window.showToast = function(msg, icon = '✅') {
       const t = document.getElementById('toast');
       document.getElementById('toast-msg').innerText = msg;
       document.getElementById('toast-icon').innerText = icon;
       t.classList.remove('translate-y-20', 'opacity-0');
       setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 2500);
-    }
+    };
 
     window.openModal = function(id) {
       const m = document.getElementById(id);
       m.classList.remove('hidden');
       setTimeout(() => m.classList.remove('opacity-0'), 10);
-    }
+    };
+
     window.closeModal = function(id) {
       const m = document.getElementById(id);
       m.classList.add('opacity-0');
       setTimeout(() => m.classList.add('hidden'), 200);
-    }
+    };
 
     window.openReportModal = function() {
-      openModal('modal-report');
-      renderReport();
-    }
+      if (window.innerWidth >= 768) {
+        isDesktopReportActive = true;
+        activeCarId = null;
+        render();
+        renderCarDetails(null);
+      } else {
+        openModal('modal-report');
+        renderReport();
+      }
+    };
 
     window.switchReportTab = function(tab) {
       currentReportTab = tab;
+      
       const btnParts = document.getElementById('report-tab-parts');
       const btnWorks = document.getElementById('report-tab-works');
-      if (tab === 'parts') {
-        btnParts.className = "flex-1 py-2.5 px-4 rounded-xl text-xs md:text-sm font-bold transition-all bg-blue-600 text-white shadow";
-        btnWorks.className = "flex-1 py-2.5 px-4 rounded-xl text-xs md:text-sm font-bold transition-all text-slate-400 hover:text-white bg-slate-800/50";
-      } else {
-        btnWorks.className = "flex-1 py-2.5 px-4 rounded-xl text-xs md:text-sm font-bold transition-all bg-blue-600 text-white shadow";
-        btnParts.className = "flex-1 py-2.5 px-4 rounded-xl text-xs md:text-sm font-bold transition-all text-slate-400 hover:text-white bg-slate-800/50";
+      if (btnParts && btnWorks) {
+        if (tab === 'parts') {
+          btnParts.className = "flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all bg-blue-600 text-white shadow";
+          btnWorks.className = "flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white bg-slate-800/50";
+        } else {
+          btnWorks.className = "flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all bg-blue-600 text-white shadow";
+          btnParts.className = "flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white bg-slate-800/50";
+        }
       }
+
+      const deskBtnParts = document.getElementById('desk-report-tab-parts');
+      const deskBtnWorks = document.getElementById('desk-report-tab-works');
+      if (deskBtnParts && deskBtnWorks) {
+        if (tab === 'parts') {
+          deskBtnParts.className = "py-1.5 px-3 rounded-lg text-xs font-bold transition-all bg-blue-600 text-white shadow";
+          deskBtnWorks.className = "py-1.5 px-3 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white bg-slate-800";
+        } else {
+          deskBtnWorks.className = "py-1.5 px-3 rounded-lg text-xs font-bold transition-all bg-blue-600 text-white shadow";
+          deskBtnParts.className = "py-1.5 px-3 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white bg-slate-800";
+        }
+      }
+
       renderReport();
-    }
+    };
 
     function renderReport() {
-      const container = document.getElementById('report-content');
-      container.innerHTML = '';
+      const mobContainer = document.getElementById('report-content');
+      const deskContainer = document.getElementById('desk-report-body');
+      
+      const containers = [mobContainer, deskContainer].filter(Boolean);
+      containers.forEach(c => c.innerHTML = '');
 
-      if (currentReportTab === 'parts') {
-        let hasItems = false;
-        Object.entries(allOrders).forEach(([orderId, o]) => {
-          if (!o.parts || o.parts.length === 0) return;
-          hasItems = true;
+      let hasItems = false;
 
-          const carWrapper = document.createElement('div');
-          carWrapper.className = "bg-slate-900/70 border border-slate-700/60 rounded-xl p-3 space-y-2";
-          carWrapper.innerHTML = `<h4 class="font-bold text-sm text-blue-400 border-b border-slate-800 pb-1.5">🚗 ${o.car}</h4>`;
+      containers.forEach(container => {
+        if (currentReportTab === 'parts') {
+          Object.entries(allOrders).forEach(([orderId, o]) => {
+            if (!o.parts || o.parts.length === 0) return;
+            hasItems = true;
 
-          const listDiv = document.createElement('div');
-          listDiv.className = "space-y-2";
+            const carWrapper = document.createElement('div');
+            carWrapper.className = "bg-slate-900/70 border border-slate-700/60 rounded-xl p-3 space-y-2";
+            carWrapper.innerHTML = `<h4 class="font-bold text-sm text-blue-400 border-b border-slate-800 pb-1.5">🚗 ${o.car}</h4>`;
 
-          o.parts.forEach((p, pIdx) => {
-            const selectColor = p.status === 'issued' ? 'text-emerald-400' : p.status === 'ordered' ? 'text-amber-400' : 'text-slate-300';
-            const itemEl = document.createElement('div');
-            itemEl.className = "flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-950/50 p-2.5 rounded-lg border border-slate-800";
-            itemEl.innerHTML = `
-              <span class="text-xs md:text-sm text-slate-200">📦 ${p.text}</span>
-              <select id="report-part-${orderId}-${pIdx}" class="bg-slate-800 border border-slate-600 rounded p-1.5 text-xs font-semibold outline-none ${selectColor}">
+            const listDiv = document.createElement('div');
+            listDiv.className = "space-y-2";
+
+            o.parts.forEach((p, pIdx) => {
+              const selectColor = p.status === 'issued' ? 'text-emerald-400' : p.status === 'ordered' ? 'text-amber-400' : 'text-slate-300';
+              const itemEl = document.createElement('div');
+              itemEl.className = "flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-950/50 p-2.5 rounded-lg border border-slate-800";
+              itemEl.innerHTML = `
+                <span class="text-xs md:text-sm text-slate-200">📦 ${p.text}</span>
+                <select class="part-select bg-slate-800 border border-slate-600 rounded p-1.5 text-xs font-semibold outline-none ${selectColor}">
+                  <option value="none" ${p.status==='none'?'selected':''}>Очікує замовлення</option>
+                  <option value="ordered" ${p.status==='ordered'?'selected':''}>🟡 Вже замовлено</option>
+                  <option value="issued" ${p.status==='issued'?'selected':''}>🟢 Деталь видано</option>
+                </select>
+              `;
+
+              itemEl.querySelector('select').addEventListener('change', (e) => {
+                let updatedParts = [...allOrders[orderId].parts];
+                updatedParts[pIdx].status = e.target.value;
+                update(ref(db, 'orders/' + orderId), { parts: updatedParts }).then(() => showToast('Замовлення оновлено'));
+              });
+
+              listDiv.appendChild(itemEl);
+            });
+
+            carWrapper.appendChild(listDiv);
+            container.appendChild(carWrapper);
+          });
+
+        } else {
+          Object.entries(allOrders).forEach(([orderId, o]) => {
+            if (!o.works || o.works.length === 0) return;
+            hasItems = true;
+
+            const carWrapper = document.createElement('div');
+            carWrapper.className = "bg-slate-900/70 border border-slate-700/60 rounded-xl p-3 space-y-2";
+            carWrapper.innerHTML = `<h4 class="font-bold text-sm text-blue-400 border-b border-slate-800 pb-1.5">🚗 ${o.car}</h4>`;
+
+            const listDiv = document.createElement('div');
+            listDiv.className = "space-y-2";
+
+            o.works.forEach((w, wIdx) => {
+              const itemEl = document.createElement('div');
+              itemEl.className = "flex items-center justify-between gap-2 bg-slate-950/50 p-2.5 rounded-lg border border-slate-800";
+              itemEl.innerHTML = `
+                <div class="flex items-center gap-2 text-xs md:text-sm">
+                  <span>${w.done ? '✅' : '⏳'}</span>
+                  <span class="${w.done ? 'text-slate-500 line-through' : 'text-slate-200'}">${w.text}</span>
+                </div>
+                <button class="text-xs px-3 py-1 rounded font-medium transition-colors ${w.done ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-emerald-600 text-white hover:bg-emerald-500'}">
+                  ${w.done ? 'Повернути в роботу' : 'Виконано'}
+                </button>
+              `;
+
+              itemEl.querySelector('button').addEventListener('click', () => {
+                let updatedWorks = [...allOrders[orderId].works];
+                updatedWorks[wIdx].done = !updatedWorks[wIdx].done;
+                update(ref(db, 'orders/' + orderId), { works: updatedWorks }).then(() => {
+                  showToast('Статус роботи змінено');
+                  renderReport();
+                });
+              });
+
+              listDiv.appendChild(itemEl);
+            });
+
+            carWrapper.appendChild(listDiv);
+            container.appendChild(carWrapper);
+          });
+        }
+
+        if (!hasItems) {
+          container.innerHTML = `<div class="text-center text-slate-500 py-10 text-sm">Немає доданих ${currentReportTab === 'parts' ? 'запчастин' : 'робіт'} ні в одном авто.</div>`;
+        }
+      });
+    }
+
+    window.setFilter = function(filter) {
+      currentFilter = filter;
+      const filters = ['diag', 'work', 'done', 'all'];
+      
+      filters.forEach(f => {
+        const btn = document.getElementById(`filter-${f}`);
+        if (f === filter) {
+          btn.className = "py-1.5 rounded-lg transition-all flex flex-col items-center justify-center bg-blue-600 text-white shadow";
+        } else {
+          btn.className = "py-1.5 rounded-lg transition-all flex flex-col items-center justify-center text-slate-400 hover:text-slate-200";
+        }
+      });
+
+      render();
+    };
+
+    onValue(ordersRef, (snapshot) => {
+      const data = snapshot.val();
+      allOrders = data ? data : {};
+      render();
+      if (!document.getElementById('modal-report').classList.contains('hidden') || isDesktopReportActive) {
+        renderReport();
+      }
+      if (activeCarId && allOrders[activeCarId]) {
+        renderCarDetails(activeCarId);
+      }
+    });
+
+    function render() {
+      const searchQuery = (document.getElementById('searchInput')?.value || '').toLowerCase();
+      const sidebarContainer = document.getElementById('sidebar-car-list');
+      sidebarContainer.innerHTML = '';
+
+      const counts = { diag: 0, work: 0, done: 0, all: 0 };
+      const statusPriority = { diag: 1, work: 2, done: 3 };
+
+      const sortedEntries = Object.entries(allOrders).sort((a, b) => {
+        const pA = statusPriority[a[1].status] || 99;
+        const pB = statusPriority[b[1].status] || 99;
+        return pA - pB;
+      });
+
+      sortedEntries.forEach(([id, o]) => {
+        if (!o.car) return;
+        
+        counts.all++;
+        if (counts[o.status] !== undefined) counts[o.status]++;
+
+        if (!o.car.toLowerCase().includes(searchQuery)) return;
+        if (currentFilter !== 'all' && o.status !== currentFilter) return;
+
+        const isSelected = activeCarId === id && !isDesktopReportActive;
+        const card = document.createElement('div');
+        
+        let statusBadge = '';
+        if (o.status === 'diag') statusBadge = '<span class="text-[10px] bg-amber-950 text-amber-400 px-1.5 py-0.5 rounded border border-amber-800/60">Черга</span>';
+        if (o.status === 'work') statusBadge = '<span class="text-[10px] bg-blue-950 text-blue-400 px-1.5 py-0.5 rounded border border-blue-800/60">В роботі</span>';
+        if (o.status === 'done') statusBadge = '<span class="text-[10px] bg-emerald-950 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-800/60">Готово</span>';
+
+        card.className = `p-3 rounded-xl border transition-all flex justify-between items-center cursor-pointer group ${isSelected ? 'bg-blue-600/20 border-blue-500 shadow-md' : 'bg-slate-800/80 border-slate-700/80 hover:border-slate-500 hover:bg-slate-800'}`;
+        
+        card.innerHTML = `
+          <div class="flex items-center gap-2.5 overflow-hidden">
+            <span class="text-base shrink-0">🚗</span>
+            <div class="truncate">
+              <h4 class="font-bold text-slate-100 text-xs md:text-sm truncate">${o.car}</h4>
+              <div class="flex items-center gap-1 mt-0.5">${statusBadge}</div>
+            </div>
+          </div>
+          <button id="del-btn-${id}" class="text-slate-500 hover:text-red-400 transition-colors p-1 shrink-0 opacity-80 md:opacity-0 group-hover:opacity-100" title="Видалити авто">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+          </button>
+        `;
+
+        card.addEventListener('click', (e) => {
+          if (e.target.closest(`#del-btn-${id}`)) return;
+          openCarDetails(id);
+        });
+
+        card.querySelector(`#del-btn-${id}`).addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (confirm('Точно видалити авто?')) {
+            if (activeCarId === id && window.innerWidth < 768) {
+              closeModal('modal-car-details');
+            }
+            if (activeCarId === id) {
+              activeCarId = null;
+              isDesktopReportActive = false;
+            }
+
+            remove(ref(db, 'orders/' + id)).then(() => {
+              showToast('Видалено');
+              render();
+              if (window.innerWidth >= 768) {
+                renderCarDetails(null);
+              }
+            });
+          }
+        });
+
+        sidebarContainer.appendChild(card);
+      });
+
+      if (sidebarContainer.children.length === 0) {
+        sidebarContainer.innerHTML = `<div class="text-center text-slate-500 py-8 text-xs">Немає авто для відображення</div>`;
+      }
+
+      document.getElementById('cnt-diag').innerText = counts.diag;
+      document.getElementById('cnt-work').innerText = counts.work;
+      document.getElementById('cnt-done').innerText = counts.done;
+      document.getElementById('cnt-all').innerText = counts.all;
+    }
+
+    function openCarDetails(id) {
+      activeCarId = id;
+      isDesktopReportActive = false;
+      render();
+      renderCarDetails(id);
+      
+      if (window.innerWidth < 768) {
+        openModal('modal-car-details');
+      }
+    }
+
+    function renderCarDetails(id) {
+      const emptyState = document.getElementById('desktop-empty-state');
+      const carContent = document.getElementById('desktop-car-content');
+      const reportContent = document.getElementById('desktop-report-content');
+
+      if (isDesktopReportActive) {
+        emptyState.classList.add('hidden');
+        carContent.classList.add('hidden');
+        carContent.classList.remove('flex');
+        
+        reportContent.classList.remove('hidden');
+        reportContent.classList.add('flex');
+        renderReport();
+        return;
+      }
+
+      reportContent.classList.add('hidden');
+      reportContent.classList.remove('flex');
+
+      const o = allOrders[id];
+      if (!o) {
+        emptyState.classList.remove('hidden');
+        carContent.classList.add('hidden');
+        carContent.classList.remove('flex');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      carContent.classList.remove('hidden');
+      carContent.classList.add('flex');
+
+      document.getElementById('desk-detail-car-title').innerText = `🚗 ${o.car}`;
+      document.getElementById('desk-detail-car-header').onclick = () => {
+        promptInput('Редагувати авто та номер', 'Напр. BMW X5 (AX 7777 AI)', v => {
+          update(ref(db, 'orders/' + id), { car: v }).then(() => showToast('Авто оновлено'));
+        }, o.car);
+      };
+
+      const deskStatusSel = document.getElementById('desk-detail-status-sel');
+      deskStatusSel.value = o.status;
+      deskStatusSel.onchange = (e) => {
+        update(ref(db, 'orders/' + id), { status: e.target.value }).then(() => showToast('Статус змінено'));
+      };
+
+      document.getElementById('detail-car-title').innerText = `🚗 ${o.car}`;
+      document.getElementById('detail-car-header').onclick = () => {
+        promptInput('Редагувати авто та номер', 'Напр. BMW X5 (AX 7777 AI)', v => {
+          update(ref(db, 'orders/' + id), { car: v }).then(() => showToast('Авто оновлено'));
+        }, o.car);
+      };
+
+      const mobStatusSel = document.getElementById('detail-status-sel');
+      mobStatusSel.value = o.status;
+      mobStatusSel.onchange = (e) => {
+        update(ref(db, 'orders/' + id), { status: e.target.value }).then(() => showToast('Статус змінено'));
+      };
+
+      const generateBodyHTML = (container) => {
+        container.innerHTML = '';
+
+        const compBlock = document.createElement('div');
+        compBlock.className = "text-xs md:text-sm text-slate-300 bg-slate-950/40 p-3.5 rounded-xl border border-slate-700/50 border-l-4 border-l-blue-500 cursor-pointer hover:bg-slate-900 transition-colors flex justify-between items-start gap-2";
+        compBlock.title = "Натисніть, щоб змінити скаргу";
+        compBlock.innerHTML = `
+          <span>💬 <span>${o.complaints || 'Без скарг (натисніть щоб додати)'}</span></span>
+          <span class="text-[10px] text-slate-400 uppercase tracking-wider shrink-0 mt-0.5 font-bold">змінити</span>
+        `;
+        compBlock.addEventListener('click', () => {
+          promptTextarea('Редагувати скаргу', o.complaints || '', v => {
+            update(ref(db, 'orders/' + id), { complaints: v }).then(() => showToast('Скаргу оновлено'));
+          });
+        });
+        container.appendChild(compBlock);
+
+        const masterCommentBlock = document.createElement('div');
+        masterCommentBlock.className = "text-xs md:text-sm text-amber-200/90 bg-amber-950/30 p-3.5 rounded-xl border border-amber-800/40 border-l-4 border-l-amber-500 space-y-1";
+        masterCommentBlock.innerHTML = `
+          <div class="flex justify-between items-center">
+            <span class="text-[10px] font-bold text-amber-400/80 uppercase tracking-wider">👷 Коментар майстра</span>
+          </div>
+          <p class="text-slate-200 leading-relaxed">${o.masterComment ? o.masterComment : '<span class="italic text-slate-500">Коментар відсутній</span>'}</p>
+        `;
+        container.appendChild(masterCommentBlock);
+
+        const worksBlock = document.createElement('div');
+        worksBlock.className = "space-y-3 bg-slate-900/50 p-4 rounded-xl border border-slate-700/60";
+        
+        let worksListHtml = (o.works || []).map((w) => `
+          <div class="flex items-start gap-2 text-xs md:text-sm bg-slate-950/40 p-2.5 rounded-lg border border-slate-800">
+            <span class="mt-0.5">${w.done ? '✅' : '⏳'}</span>
+            <span class="${w.done ? 'text-slate-500 line-through' : 'text-slate-200'} leading-tight">${w.text}</span>
+          </div>
+        `).join('');
+
+        worksBlock.innerHTML = `
+          <div class="flex justify-between items-center mb-1">
+            <h4 class="font-bold text-xs uppercase text-slate-400 tracking-wider">🛠️ Роботи</h4>
+            <button id="add-work-btn" class="text-xs font-bold text-blue-400 hover:text-blue-300 bg-blue-500/10 border border-blue-500/20 px-2.5 py-1 rounded-lg transition-colors">+ Додати роботу</button>
+          </div>
+          ${worksListHtml ? `<div class="space-y-2">${worksListHtml}</div>` : '<p class="text-xs text-slate-500 italic">Роботи ще не додані</p>'}
+        `;
+
+        worksBlock.querySelector('#add-work-btn').addEventListener('click', () => {
+          promptInput('Додати роботу', 'Заміна масла...', v => {
+            let updatedWorks = [...(o.works || []), { text: v, done: false }];
+            update(ref(db, 'orders/' + id), { works: updatedWorks }).then(() => showToast('Роботу додано'));
+          });
+        });
+        container.appendChild(worksBlock);
+
+        const partsBlock = document.createElement('div');
+        partsBlock.className = "space-y-3 bg-slate-900/50 p-4 rounded-xl border border-slate-700/60";
+
+        partsBlock.innerHTML = `
+          <div class="flex justify-between items-center mb-1">
+            <h4 class="font-bold text-xs uppercase text-slate-400 tracking-wider">📦 Запчастини</h4>
+            <button id="add-part-btn" class="text-xs font-bold text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg transition-colors">+ Замовити деталь</button>
+          </div>
+          <div id="parts-list-container" class="space-y-2"></div>
+        `;
+
+        const partsListContainer = partsBlock.querySelector('#parts-list-container');
+        if (!o.parts || o.parts.length === 0) {
+          partsListContainer.innerHTML = '<p class="text-xs text-slate-500 italic">Запчастини ще не додані</p>';
+        } else {
+          o.parts.forEach((p, idx) => {
+            let selectColor = p.status === 'issued' ? 'text-emerald-400' : p.status === 'ordered' ? 'text-amber-400' : 'text-slate-400';
+            const partEl = document.createElement('div');
+            partEl.className = "flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-950/50 p-2.5 rounded-lg border border-slate-800";
+            partEl.innerHTML = `
+              <span class="text-xs md:text-sm text-slate-200 leading-tight">📦 ${p.text}</span>
+              <select id="part-sel-${idx}" class="bg-slate-800 border border-slate-600 rounded p-1.5 text-xs font-semibold outline-none ${selectColor}">
                 <option value="none" ${p.status==='none'?'selected':''}>Очікує замовлення</option>
                 <option value="ordered" ${p.status==='ordered'?'selected':''}>🟡 Вже замовлено</option>
                 <option value="issued" ${p.status==='issued'?'selected':''}>🟢 Деталь видано</option>
               </select>
             `;
 
-            itemEl.querySelector('select').addEventListener('change', (e) => {
+            partEl.querySelector('select').addEventListener('change', (e) => {
               let updatedParts = [...o.parts];
-              updatedParts[pIdx].status = e.target.value;
-              update(ref(db, 'orders/' + orderId), { parts: updatedParts }).then(() => showToast('Замовлення оновлено'));
+              updatedParts[idx].status = e.target.value;
+              update(ref(db, 'orders/' + id), { parts: updatedParts }).then(() => showToast('Замовлення оновлено'));
             });
 
-            listDiv.appendChild(itemEl);
+            partsListContainer.appendChild(partEl);
           });
-
-          carWrapper.appendChild(listDiv);
-          container.appendChild(carWrapper);
-        });
-
-        if (!hasItems) {
-          container.innerHTML = `<div class="text-center text-slate-500 py-10 text-sm">Немає доданих запчастин ні в одному авто.</div>`;
         }
 
-      } else {
-        // Роботи
-        let hasItems = false;
-        Object.entries(allOrders).forEach(([orderId, o]) => {
-          if (!o.works || o.works.length === 0) return;
-          hasItems = true;
-
-          const carWrapper = document.createElement('div');
-          carWrapper.className = "bg-slate-900/70 border border-slate-700/60 rounded-xl p-3 space-y-2";
-          carWrapper.innerHTML = `<h4 class="font-bold text-sm text-blue-400 border-b border-slate-800 pb-1.5">🚗 ${o.car}</h4>`;
-
-          const listDiv = document.createElement('div');
-          listDiv.className = "space-y-2";
-
-          o.works.forEach((w, wIdx) => {
-            const itemEl = document.createElement('div');
-            itemEl.className = "flex items-center justify-between gap-2 bg-slate-950/50 p-2.5 rounded-lg border border-slate-800";
-            itemEl.innerHTML = `
-              <div class="flex items-center gap-2 text-xs md:text-sm">
-                <span>${w.done ? '✅' : '⏳'}</span>
-                <span class="${w.done ? 'text-slate-500 line-through' : 'text-slate-200'}">${w.text}</span>
-              </div>
-              <button id="report-work-btn-${orderId}-${wIdx}" class="text-xs px-3 py-1 rounded font-medium transition-colors ${w.done ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-emerald-600 text-white hover:bg-emerald-500'}">
-                ${w.done ? 'Повернути в роботу' : 'Виконано'}
-              </button>
-            `;
-
-            itemEl.querySelector('button').addEventListener('click', () => {
-              let updatedWorks = [...o.works];
-              updatedWorks[wIdx].done = !updatedWorks[wIdx].done;
-              update(ref(db, 'orders/' + orderId), { works: updatedWorks }).then(() => {
-                showToast('Статус роботи змінено');
-                renderReport();
-              });
-            });
-
-            listDiv.appendChild(itemEl);
-          });
-
-          carWrapper.appendChild(listDiv);
-          container.appendChild(carWrapper);
-        });
-
-        if (!hasItems) {
-          container.innerHTML = `<div class="text-center text-slate-500 py-10 text-sm">Немає доданих робіт ні в одному авто.</div>`;
-        }
-      }
-    }
-
-    window.switchTab = function(tab) {
-      activeTab = tab;
-      const panels = {
-        diag: document.getElementById('panel-diag'),
-        work: document.getElementById('panel-work'),
-        done: document.getElementById('panel-done')
-      };
-      const tabs = {
-        diag: document.getElementById('tab-diag'),
-        work: document.getElementById('tab-work'),
-        done: document.getElementById('tab-done')
-      };
-
-      Object.keys(panels).forEach(key => {
-        if (key === tab) {
-          panels[key].classList.remove('hidden');
-          panels[key].classList.add('flex');
-        } else {
-          panels[key].classList.remove('flex');
-          panels[key].classList.add('hidden');
-        }
-      });
-
-      const styles = {
-        diag: { active: 'bg-amber-950/60 text-amber-400 border border-amber-800/50', inactive: 'text-slate-400' },
-        work: { active: 'bg-blue-950/60 text-blue-400 border border-blue-800/50', inactive: 'text-slate-400' },
-        done: { active: 'bg-emerald-950/60 text-emerald-400 border border-emerald-800/50', inactive: 'text-slate-400' }
-      };
-
-      Object.keys(tabs).forEach(key => {
-        tabs[key].className = `flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${key === tab ? styles[key].active : styles[key].inactive}`;
-      });
-    }
-
-    onValue(ordersRef, (snapshot) => {
-      const data = snapshot.val();
-      allOrders = data ? data : {};
-      render();
-      if (!document.getElementById('modal-report').classList.contains('hidden')) {
-        renderReport();
-      }
-    });
-
-    function render() {
-      const searchQuery = (document.getElementById('searchInput')?.value || '').toLowerCase();
-      const cols = { diag: document.getElementById('col-diag'), work: document.getElementById('col-work'), done: document.getElementById('col-done') };
-      const counts = { diag: 0, work: 0, done: 0 };
-
-      Object.values(cols).forEach(c => c.innerHTML = '');
-
-      const columnIndexes = { diag: 0, work: 0, done: 0 };
-
-      Object.entries(allOrders).forEach(([id, o]) => {
-        if (!o.car || !o.car.toLowerCase().includes(searchQuery)) return;
-        if (!cols[o.status]) return;
-
-        const isEven = columnIndexes[o.status] % 2 === 1;
-        columnIndexes[o.status]++;
-
-        const card = document.createElement('div');
-        card.className = `${isEven ? 'bg-slate-800 border-slate-600 shadow-md' : 'bg-slate-900/90 border-slate-700/80 shadow-sm'} p-3.5 md:p-4 rounded-xl border transition-shadow flex flex-col gap-3 group`;
-        
-        const works = (o.works || []).map((w) => `
-          <div class="flex items-start gap-2 text-[13px] bg-slate-950/40 p-2 rounded-lg border border-slate-700/50">
-            <span class="mt-0.5">${w.done ? '✅' : '⏳'}</span>
-            <span class="${w.done ? 'text-slate-500 line-through' : 'text-slate-200'} leading-tight">${w.text}</span>
-          </div>
-        `).join('');
-
-        const parts = (o.parts || []).map((p, idx) => {
-          let selectColor = p.status === 'issued' ? 'text-emerald-400' : p.status === 'ordered' ? 'text-amber-400' : 'text-slate-400';
-          return `
-          <div class="flex flex-col gap-1.5 bg-slate-950/50 p-2.5 rounded-lg border border-slate-700/50">
-            <span class="text-[13px] text-slate-200 leading-tight">📦 ${p.text}</span>
-            <select id="part-sel-${id}-${idx}" class="bg-slate-800 border border-slate-600 rounded p-1.5 text-xs font-semibold outline-none ${selectColor}">
-              <option value="none" ${p.status==='none'?'selected':''}>Очікує замовлення</option>
-              <option value="ordered" ${p.status==='ordered'?'selected':''}>🟡 Вже замовлено</option>
-              <option value="issued" ${p.status==='issued'?'selected':''}>🟢 Деталь видано</option>
-            </select>
-          </div>
-        `}).join('');
-
-        card.innerHTML = `
-          <div class="flex justify-between items-start gap-2">
-            <h4 class="font-bold text-slate-100 text-[15px] leading-tight">${o.car}</h4>
-            <button id="del-btn-${id}" class="text-slate-400 md:text-slate-500 hover:text-red-400 transition-colors p-1 md:opacity-0 md:group-hover:opacity-100"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
-          </div>
-          
-          <div id="complaints-block-${id}" class="text-[13px] text-slate-300 bg-slate-950/40 p-2 rounded border border-slate-700/40 border-l-2 border-l-blue-500 cursor-pointer hover:bg-slate-900 transition-colors flex justify-between items-start gap-2" title="Натисніть, щоб змінити скаргу">
-            <span>💬 <span id="complaints-text-${id}">${o.complaints || 'Без скарг (натисніть щоб додати)'}</span></span>
-            <span class="text-[10px] text-slate-400 uppercase tracking-wider shrink-0 mt-0.5">змінити</span>
-          </div>
-          
-          ${works ? `<div class="space-y-1">${works}</div>` : ''}
-          ${parts ? `<div class="space-y-2 mt-1 border-t border-slate-700/50 pt-2">${parts}</div>` : ''}
-
-          <div class="mt-auto pt-3 border-t border-slate-700/50 flex flex-wrap justify-between items-center gap-2">
-            <select id="status-sel-${id}" class="bg-slate-950 border border-slate-600 rounded-lg text-xs font-medium p-2 text-slate-200 outline-none focus:border-blue-500">
-              <option value="diag" ${o.status==='diag'?'selected':''}>Черга</option>
-              <option value="work" ${o.status==='work'?'selected':''}>В роботі</option>
-              <option value="done" ${o.status==='done'?'selected':''}>Готово</option>
-            </select>
-            <div class="flex gap-2">
-              <button id="add-work-${id}" class="text-[11px] font-bold uppercase text-slate-300 md:text-slate-400 hover:text-blue-400 transition-colors bg-slate-950/60 px-2.5 py-1.5 rounded">+ Робота</button>
-              <button id="add-part-${id}" class="text-[11px] font-bold uppercase text-slate-300 md:text-slate-400 hover:text-emerald-400 transition-colors bg-slate-950/60 px-2.5 py-1.5 rounded">+ Деталь</button>
-            </div>
-          </div>
-        `;
-
-        card.querySelector(`#del-btn-${id}`).addEventListener('click', () => {
-          if(confirm('Точно видалити авто?')) {
-            remove(ref(db, 'orders/' + id)).then(() => showToast('Видалено'));
-          }
-        });
-
-        card.querySelector(`#complaints-block-${id}`).addEventListener('click', () => {
-          promptTextarea('Редагувати скаргу', o.complaints || '', v => {
-            update(ref(db, 'orders/' + id), { complaints: v }).then(() => showToast('Скаргу оновлено'));
-          });
-        });
-
-        card.querySelector(`#status-sel-${id}`).addEventListener('change', (e) => {
-          update(ref(db, 'orders/' + id), { status: e.target.value }).then(() => showToast('Статус змінено'));
-        });
-
-        (o.parts || []).forEach((_, idx) => {
-          card.querySelector(`#part-sel-${id}-${idx}`).addEventListener('change', (e) => {
-            let updatedParts = [...o.parts];
-            updatedParts[idx].status = e.target.value;
-            update(ref(db, 'orders/' + id), { parts: updatedParts }).then(() => showToast('Замовлення оновлено'));
-          });
-        });
-
-        card.querySelector(`#add-work-${id}`).addEventListener('click', () => {
-          promptInput('Додати роботу', 'Заміна масла...', v => {
-            let updatedWorks = [...(o.works || []), { text: v, done: false }];
-            update(ref(db, 'orders/' + id), { works: updatedWorks }).then(() => showToast('Роботу додано'));
-          });
-        });
-
-        card.querySelector(`#add-part-${id}`).addEventListener('click', () => {
+        partsBlock.querySelector('#add-part-btn').addEventListener('click', () => {
           promptInput('Замовити деталь', 'Фільтр салону', v => {
             let updatedParts = [...(o.parts || []), { text: v, status: 'none' }];
             update(ref(db, 'orders/' + id), { parts: updatedParts }).then(() => showToast('Деталь додано'));
           });
         });
+        container.appendChild(partsBlock);
+      };
 
-        cols[o.status].appendChild(card);
-        counts[o.status]++;
-      });
-
-      document.getElementById('cnt-diag').innerText = counts.diag;
-      document.getElementById('cnt-work').innerText = counts.work;
-      document.getElementById('cnt-done').innerText = counts.done;
-
-      document.getElementById('badge-diag').innerText = counts.diag;
-      document.getElementById('badge-work').innerText = counts.work;
-      document.getElementById('badge-done').innerText = counts.done;
+      generateBodyHTML(document.getElementById('desk-detail-car-body'));
+      generateBodyHTML(document.getElementById('detail-car-body'));
     }
 
     window.saveNewOrder = function() {
@@ -510,18 +695,19 @@
       const cmp = document.getElementById('in-complaints').value.trim();
       if (!car) return showToast('Введіть марку авто!', '⚠️');
       
-      push(ordersRef, { car, complaints: cmp, status: 'diag', works: [], parts: [] }).then(() => {
+      push(ordersRef, { car, complaints: cmp, status: 'diag', works: [], parts: [] }).then((res) => {
         document.getElementById('in-car').value = ''; 
         document.getElementById('in-complaints').value = '';
         closeModal('modal-new-order');
         showToast('Авто прийнято');
+        if (res.key) openCarDetails(res.key);
       });
-    }
+    };
 
-    function promptInput(title, placeholder, callback) {
+    function promptInput(title, placeholder, callback, initialValue = '') {
       document.getElementById('modal-input-title').innerText = title;
       const input = document.getElementById('modal-input-field');
-      input.value = '';
+      input.value = initialValue;
       input.placeholder = placeholder;
       currentAction = callback;
       openModal('modal-input');
